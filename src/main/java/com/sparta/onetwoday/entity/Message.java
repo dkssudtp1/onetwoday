@@ -5,13 +5,13 @@ import lombok.NoArgsConstructor;
 
 @Getter
 @NoArgsConstructor
-public class Message {
+public class Message<T> {
 
     private boolean status;
     private String message;
-    private Object data;
+    private T data;
 
-    public Message(boolean status, String message, Object data) {
+    public Message(boolean status, String message, T data) {
         this.status = status;
         this.message = message;
         this.data = data;
