@@ -44,7 +44,7 @@ public class UserController {
 
     @RequestMapping("/forbidden")
     public ResponseEntity<Message> getForbidden() {
-        Message message = new Message(true, "로그인을 안했거나 권한이 없습니다.", null);
+        Message message = new Message(false, "로그인을 안했거나 권한이 없습니다.", null);
 
         return ResponseEntity.badRequest().body(message);
     }
