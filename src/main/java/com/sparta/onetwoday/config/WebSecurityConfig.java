@@ -15,9 +15,6 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.web.cors.CorsConfiguration;
-import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
-import org.springframework.web.filter.CorsFilter;
 
 @Configuration
 @RequiredArgsConstructor
@@ -42,7 +39,7 @@ public class WebSecurityConfig {
                             "/js/**",
                             "/css/**",
                             "/templates/**"
-                    );
+                            );
         };
     }
 
@@ -62,20 +59,5 @@ public class WebSecurityConfig {
                 .exceptionHandling().authenticationEntryPoint((request, response, authException) -> response.sendRedirect("/api/user/forbidden"));
         return http.build();
     }
-
-//    @Bean
-//    public CorsFilter corsFilter() {
-//        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-//        CorsConfiguration config = new CorsConfiguration();
-//        config.setAllowCredentials(true);
-//        config.addAllowedOrigin("*");
-//        config.addAllowedHeader("*");
-//        config.addAllowedMethod("*");
-//
-//        config.setMaxAge(3600L);
-//        config.addExposedHeader("Authorization");
-//        source.registerCorsConfiguration("/api/**", config);
-//        return new CorsFilter(source);
-//    }
 
 }
