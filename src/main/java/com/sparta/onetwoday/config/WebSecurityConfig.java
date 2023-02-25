@@ -9,6 +9,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -24,7 +25,7 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 @RequiredArgsConstructor
 @EnableWebSecurity // 스프링 Security 지원을 가능하게 함
 @EnableGlobalMethodSecurity(securedEnabled = true) // @Secured 어노테이션 활성화
-public class WebSecurityConfig {
+public class WebSecurityConfig{
 
     private final JwtUtil jwtUtil;
 
@@ -49,7 +50,7 @@ public class WebSecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.addAllowedOrigin("*");
+        configuration.addAllowedOriginPattern("*");
         configuration.addAllowedMethod("*");
         configuration.addAllowedHeader("*");
         configuration.setAllowCredentials(true);
@@ -73,7 +74,7 @@ public class WebSecurityConfig {
                 .requestMatchers(CorsUtils::isPreFlightRequest).permitAll()
                 .anyRequest().authenticated()
                 // JWT 인증/인가를 사용하기 위한 설정
-                .and().cors()
+                .and().cors().configurationSource(corsConfigurationSource())
                 .and().addFilterBefore(new JwtAuthFilter(jwtUtil), UsernamePasswordAuthenticationFilter.class)
                 .exceptionHandling().authenticationEntryPoint((request, response, authException) -> response.sendRedirect("/api/user/forbidden"));
         return http.build();
