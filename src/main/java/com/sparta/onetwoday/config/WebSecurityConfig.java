@@ -3,6 +3,7 @@ package com.sparta.onetwoday.config;
 import com.sparta.onetwoday.jwt.JwtAuthFilter;
 import com.sparta.onetwoday.jwt.JwtUtil;
 import lombok.RequiredArgsConstructor;
+import org.apache.catalina.filters.CorsFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -15,6 +16,8 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 @Configuration
 @RequiredArgsConstructor
@@ -59,5 +62,4 @@ public class WebSecurityConfig {
                 .exceptionHandling().authenticationEntryPoint((request, response, authException) -> response.sendRedirect("/api/user/forbidden"));
         return http.build();
     }
-
 }
