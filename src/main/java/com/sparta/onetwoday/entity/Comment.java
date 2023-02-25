@@ -1,5 +1,6 @@
 package com.sparta.onetwoday.entity;
 
+import com.sparta.onetwoday.dto.CommentRequestDto;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -21,12 +22,12 @@ public class Comment extends Timestamped{
     private User user;
 
     @ManyToOne
-    @JoinColumn(name = "BOARD_ID", nullable = false)
-    private Board board;
+    @JoinColumn(name = "TRAVEL_ID", nullable = false)
+    private Travel travel;
 
-    public Comment(CommentRequestDto requestDto, Board board, User user) {
+    public Comment(CommentRequestDto requestDto, Travel travel, User user) {
         this.user = user;
-        this.board = board;
+        this.travel = travel;
         this.comments = requestDto.getComments();
     }
 
