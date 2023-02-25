@@ -63,18 +63,19 @@ public class WebSecurityConfig {
         return http.build();
     }
 
-    @Bean
-    public CorsFilter corsFilter() {
-        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        CorsConfiguration config = new CorsConfiguration();
-        config.setAllowCredentials(true);
-        config.addAllowedHeader("*");
-        config.addAllowedMethod("*");
-
-        config.setMaxAge(3600L);
-        config.addExposedHeader("Authorization");
-        source.registerCorsConfiguration("/api/**", config);
-        return new CorsFilter(source);
-    }
+//    @Bean
+//    public CorsFilter corsFilter() {
+//        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+//        CorsConfiguration config = new CorsConfiguration();
+//        config.setAllowCredentials(true);
+//        config.addAllowedOrigin("*");
+//        config.addAllowedHeader("*");
+//        config.addAllowedMethod("*");
+//
+//        config.setMaxAge(3600L);
+//        config.addExposedHeader("Authorization");
+//        source.registerCorsConfiguration("/api/**", config);
+//        return new CorsFilter(source);
+//    }
 
 }
