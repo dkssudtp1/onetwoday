@@ -21,7 +21,7 @@ public class UserController {
 
     @ResponseBody
     @PostMapping("/signup")
-    public ResponseEntity<Message> signup(@Valid SignupRequestDto signupRequestDto) {
+    public ResponseEntity<Message> signup(@RequestBody @Valid SignupRequestDto signupRequestDto) {
         userService.signup(signupRequestDto);
 
         Message message = new Message(true, "회원가입 완료", null);
