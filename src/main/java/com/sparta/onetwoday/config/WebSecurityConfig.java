@@ -37,7 +37,8 @@ public class WebSecurityConfig {
                     .antMatchers(
                             "/images/**",
                             "/js/**",
-                            "/css/**"
+                            "/css/**",
+                            "/templates/**"
                             );
         };
     }
