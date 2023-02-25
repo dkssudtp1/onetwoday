@@ -43,7 +43,6 @@ jobs:
       ## create application.properties
       - name: make application.properties
         run:
-          mkdir ./src/main/resources |
           touch ./src/main/resources/application.properties
         shell: bash
 
