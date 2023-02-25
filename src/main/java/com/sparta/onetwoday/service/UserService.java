@@ -28,7 +28,7 @@ public class UserService {
     public void signup(SignupRequestDto signupRequestDto) {
         String username = signupRequestDto.getUsername();
         String password = passwordEncoder.encode(signupRequestDto.getPassword());
-        String email = signupRequestDto.getEmail();
+        String nickname = signupRequestDto.getNickname();
 
         // 회원 중복 확인
         Optional<User> found = userRepository.findByUsername(username);
@@ -45,7 +45,7 @@ public class UserService {
             role = UserRoleEnum.ADMIN;
         }
 
-        User user = new User(username, password, role);
+        User user = new User(username, nickname, password, role);
         userRepository.save(user);
     }
 
