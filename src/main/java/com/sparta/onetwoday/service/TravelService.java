@@ -1,5 +1,6 @@
 package com.sparta.onetwoday.service;
 
+import com.sparta.onetwoday.dto.TravelListResponseDto;
 import com.sparta.onetwoday.dto.TravelRequestDto;
 import com.sparta.onetwoday.dto.TravelResponseDto;
 import com.sparta.onetwoday.entity.Travel;
@@ -8,6 +9,12 @@ import com.sparta.onetwoday.repository.TravelRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
 
 @Service
 @RequiredArgsConstructor
@@ -39,5 +46,34 @@ public class TravelService {
 
         Travel travel = travelRepository.saveAndFlush(new Travel(requestDto, user, budget));
         return new TravelResponseDto(travel);
+    }
+
+    @Transactional
+    public List<TravelListResponseDto> getMyList(User user) {
+
+        List<Travel> travels = travelRepository.findAllByUser(user);
+
+        return travels.stream().map(TravelListResponseDto::new).collect(Collectors.toList());
+
+    }
+
+    @Transactional(readOnly = true)
+    public List<TravelListResponseDto> getRandomList() {
+        Long count = travelRepository.countBy();
+        List<TravelListResponseDto> travelListResponse = new ArrayList<>();
+        if(count < 8) {
+            List<Travel> travels = travelRepository.findAll();
+            return travels.stream().map(TravelListResponseDto::new).collect(Collectors.toList());
+        }
+
+        for(int i = 1; i <= 8; i++) {
+            Long id = (long)(Math.random() * count);
+            Optional<Travel> travel = travelRepository.findById(id);
+            travelListResponse.add((TravelListResponseDto) travel.stream().map(TravelListResponseDto::new));
+        }
+
+        return travelListResponse;
+
+
     }
 }

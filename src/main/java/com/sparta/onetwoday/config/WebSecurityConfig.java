@@ -54,8 +54,8 @@ public class WebSecurityConfig {
         http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
 
         http.authorizeRequests().antMatchers("/api/user/**").permitAll()
-                .antMatchers(HttpMethod.GET, "/api/board").permitAll()
-                .antMatchers(HttpMethod.GET, "/api/board/**").permitAll()
+                .antMatchers(HttpMethod.GET, "/api/travel").permitAll()
+                .antMatchers(HttpMethod.GET, "/api/travel/**").permitAll()
                 .anyRequest().authenticated()
                 // JWT 인증/인가를 사용하기 위한 설정
                 .and().addFilterBefore(new JwtAuthFilter(jwtUtil), UsernamePasswordAuthenticationFilter.class)
