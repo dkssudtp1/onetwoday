@@ -32,9 +32,7 @@ public class UserController {
     @ResponseBody
     @PostMapping("/login")
     public ResponseEntity<Message> login(@RequestBody LoginRequestDto loginRequestDto, HttpServletResponse response) {
-        userService.login(loginRequestDto, response);
-
-        Message message = new Message(true, "로그인 완료", null);
+        Message message = new Message(true, "로그인 완료", userService.login(loginRequestDto, response));
 
         return ResponseEntity.ok(message);
     }
