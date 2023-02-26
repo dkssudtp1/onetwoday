@@ -2,6 +2,7 @@ package com.sparta.onetwoday.dto;
 
 import com.sparta.onetwoday.entity.Travel;
 import lombok.Getter;
+import org.springframework.web.multipart.MultipartFile;
 
 @Getter
 public class TravelRequestDto {
