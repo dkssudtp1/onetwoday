@@ -3,6 +3,7 @@ package com.sparta.onetwoday.entity;
 import com.sparta.onetwoday.dto.TravelRequestDto;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.persistence.*;
 
@@ -41,4 +42,11 @@ public class Travel extends TimeStamped {
         this.user = user;
     }
 
+    public void update(TravelRequestDto requestDto, Integer budget) {
+        this.title = requestDto.getTitle();
+        this.images = requestDto.getImages();
+        this.content = requestDto.getContent();
+        this.budget = budget;
+
+    }
 }
