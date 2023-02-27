@@ -23,13 +23,13 @@ import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.sparta.onetwoday.entity.ExceptionMessage.*;
 
 @Service
 @RequiredArgsConstructor
 public class CommentService {
     private final CommentRepository commentRepository;
     private final TravelRepository travelRepository;
-    private final UserRepository userRepository;
 
 
     //댓글 등록
@@ -37,7 +37,7 @@ public class CommentService {
     public CommentResponseDto createComment(Long travelId, CommentRequestDto commentRequestDto, User user) {
 
             Travel travel = travelRepository.findById(travelId).orElseThrow(
-                    () -> new IllegalArgumentException("게시글이 존재하지 않습니다.")
+                    () -> new IllegalArgumentException(BOARD_DOES_NOT_EXIEST.getMessage())
             );
 
             Comment comment = commentRepository.save(new Comment(commentRequestDto, travel, user));
@@ -45,17 +45,18 @@ public class CommentService {
             return new CommentResponseDto(comment);
         }
     //댓글 삭제
-    public String deleteComment(Long commentId, User user) {
+    public List<CommentResponseDto> deleteComment(Long travelId, Long commentId, User user) {
 
         Comment comment = commentRepository.findById(commentId).orElseThrow(
-                () -> new IllegalArgumentException("댓글이 존재하지 않습니다.")
+                () -> new IllegalArgumentException(COMMENT_DOES_NOT_EXIEST.getMessage())
         );
         if (hasAuthority(user, comment)) {
             commentRepository.deleteById(commentId);
         } else {
-            throw new IllegalArgumentException("작성자만 삭제/수정할 수 있습니다.");
+            throw new IllegalArgumentException(ILLEGAL_ACCESS_UPDATE_OR_DELETE.getMessage());
         }
-        return "댓글 삭제 성공.";
+
+        return getCommentList(travelId);
     }
 
     //댓글 리스트
