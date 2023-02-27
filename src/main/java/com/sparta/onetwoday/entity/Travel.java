@@ -31,17 +31,17 @@ public class Travel extends TimeStamped {
     @Column
     private Integer budget;
 
-    public Travel(TravelRequestDto requestDto, User user, Integer budget) {
+    public Travel(TravelRequestDto requestDto, User user, Integer budget, String imgUrl) {
         this.title = requestDto.getTitle();
         this.content = requestDto.getContent();
-        this.images = requestDto.getImages();
+        this.images = imgUrl;
         this.budget = budget;
         this.user = user;
     }
 
-    public void update(TravelRequestDto requestDto, Integer budget) {
+    public void update(TravelRequestDto requestDto, Integer budget, String imgUrl) {
         this.title = requestDto.getTitle();
-        this.images = requestDto.getImages();
+        this.images = imgUrl;
         this.content = requestDto.getContent();
         this.budget = budget;
 

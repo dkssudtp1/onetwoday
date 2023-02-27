@@ -1,5 +1,9 @@
 package com.sparta.onetwoday.service;
 
+import com.amazonaws.services.s3.AmazonS3Client;
+import com.amazonaws.services.s3.model.CannedAccessControlList;
+import com.amazonaws.services.s3.model.ObjectMetadata;
+import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.sparta.onetwoday.dto.*;
 import com.sparta.onetwoday.entity.Travel;
 import com.sparta.onetwoday.entity.TravelLike;
@@ -8,14 +12,18 @@ import com.sparta.onetwoday.entity.UserRoleEnum;
 import com.sparta.onetwoday.repository.TravelLikeRepository;
 import com.sparta.onetwoday.repository.TravelRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 
 @Service
@@ -26,12 +34,20 @@ public class TravelService {
 
     private final CommentService commentService;
 
+    private final AmazonS3Client amazonS3Client;
+
+    @Value("${cloud.aws.s3.bucket}")
+    private String bucketName;
+
+    private String bucketUrl = "https://onetwoday.s3.ap-northeast-2.amazonaws.com/";
+
 
     //게시물 작성하기
     @Transactional
-    public TravelResponseDto createTravel(@RequestBody TravelRequestDto requestDto, User user) {
+    public TravelResponseDto createTravel(@RequestBody TravelRequestDto requestDto, User user) throws IOException {
         Integer budget = budgetReturn(requestDto);
-
+        String fileName =  UUID.randomUUID() + "_" + requestDto.getImages().getOriginalFilename();
+        s3ImageUpload(requestDto.getImages(), fileName);
 //        switch (requestDto.getBudget()) {
 //            case 0:
 //                budget = 0;
@@ -47,11 +63,11 @@ public class TravelService {
 //                break;
 //        }
 
-        if(budget == null) {
+        if (budget == null) {
             throw new NullPointerException("유효한 범위 내에 있는 예산이 아닙니다.");
         }
 
-        Travel travel = travelRepository.saveAndFlush(new Travel(requestDto, user, budget));
+        Travel travel = travelRepository.saveAndFlush(new Travel(requestDto, user, budget, amazonS3Client.getUrl(bucketName, fileName).toString()));
         return new TravelResponseDto(travel);
     }
 
@@ -61,7 +77,7 @@ public class TravelService {
 
         List<Travel> travels = travelRepository.findAllByUser(user);
         List<TravelListResponseDto> travelListResponseDtos = new ArrayList<>();
-        for(Travel travel : travels) {
+        for (Travel travel : travels) {
 //            List<CommentResponseDto> commentResponseDtos = new commentService.getCommentList(travel.getId())
             Long likes = travelLikeRepository.countByTravelId(travel.getId());
             travelListResponseDtos.add(new TravelListResponseDto(travel, likes));
@@ -93,10 +109,10 @@ public class TravelService {
 //        return travelListResponse;
 
         Long count = travelRepository.countBy();
-        if(count < 8) {
+        if (count < 8) {
             List<Travel> travels = travelRepository.findAll();
             List<TravelListResponseDto> responseDtos = new ArrayList<>();
-            for(Travel travel : travels) {
+            for (Travel travel : travels) {
                 //            List<CommentResponseDto> commentResponseDtos = new commentService.getCommentList(travel.getId())
                 Long likes = travelLikeRepository.countByTravelId(travel.getId());
                 responseDtos.add(new TravelListResponseDto(travel, likes));
@@ -109,7 +125,7 @@ public class TravelService {
 
         List<Travel> travels = travelRepository.findAll();
 
-        for(Travel i : travels) {
+        for (Travel i : travels) {
             Long likes = travelLikeRepository.countByTravelId(i.getId());
             TravelListResponseDto travelListResponse = new TravelListResponseDto(i.getId(), i.getTitle(), i.getImages(), likes);
             response.add(travelListResponse);
@@ -133,17 +149,26 @@ public class TravelService {
 
     //게시물 수정하기
     @Transactional
-    public TravelCommentDto updateTravel(Long travelId, TravelRequestDto requestDto, User user) {
+    public TravelCommentDto updateTravel(Long travelId, TravelRequestDto requestDto, User user) throws IOException {
+        String fileName = requestDto.getImages().getOriginalFilename();
+
         Travel travel = travelRepository.findById(travelId).orElseThrow(
                 () -> new IllegalArgumentException("게시판이 존재하지 않습니다.")
         );
+
         Integer budget = budgetReturn(requestDto);
-        if(budget == null) {
+        if (budget == null) {
             throw new NullPointerException("유효한 범위 내에 있는 예산이 아닙니다.");
+        }
+        
+        //요청받은거랑 db 이미지명이 같을경우
+        if(!fileName.equals(travel.getImages())){
+            fileName = UUID.randomUUID() + "_" + requestDto.getImages().getOriginalFilename();
+            s3ImageUpload(requestDto.getImages(), fileName);
         }
 
         if (hasAuthority(user, travel)) {
-            travel.update(requestDto, budget);
+            travel.update(requestDto, budget, amazonS3Client.getUrl(bucketName, fileName).toString());
         } else {
             throw new IllegalArgumentException("작성자만 수정/삭제할 수 있습니다.");
         }
@@ -158,14 +183,14 @@ public class TravelService {
         Travel travel = travelRepository.findById(travelId).orElseThrow(
                 () -> new IllegalArgumentException("게시판이 존재하지 않습니다.")
         );
-        if(hasAuthority(user, travel)) {
+        if (hasAuthority(user, travel)) {
 //            commentRepository.deleteByTravelId(travelId);
             travelRepository.deleteById(travelId);
         } else {
             throw new IllegalArgumentException("작성자만 삭제/수정할 수 있습니다.");
         }
     }
-    
+
     //게시물 좋아요
     @Transactional
     public String likeTravel(Long travelId, User user) {
@@ -173,7 +198,7 @@ public class TravelService {
                 () -> new IllegalArgumentException("게시판이 존재하지 않습니다.")
         );
         if (travelLikeRepository.findByUserIdAndTravelId(user.getId(), travelId).isEmpty()) {
-            travelLikeRepository.saveAndFlush(new TravelLike(travel,user));
+            travelLikeRepository.saveAndFlush(new TravelLike(travel, user));
             return "좋아요를 하셨습니다.";
         } else {
             travelLikeRepository.deleteByUserIdAndTravelId(user.getId(), travelId);
@@ -198,4 +223,17 @@ public class TravelService {
         return user.getId().equals(travel.getUser().getId()) || user.getRole().equals(UserRoleEnum.ADMIN);
     }
 
+    public void s3ImageUpload(MultipartFile images, String fileName) throws IOException {
+        if(!fileName.equals("")) {
+            ObjectMetadata objectMetadata = new ObjectMetadata();
+            objectMetadata.setContentType(images.getContentType());
+
+            try (InputStream inputStream = images.getInputStream()) {
+                amazonS3Client.putObject(new PutObjectRequest(bucketName, fileName, inputStream, objectMetadata)
+                        .withCannedAcl(CannedAccessControlList.PublicRead));
+            } catch (IOException e) {
+                throw new IOException("이미지가 잘못 되었습니다.");
+            }
+        }
+    }
 }

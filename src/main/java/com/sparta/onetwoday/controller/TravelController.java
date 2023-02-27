@@ -10,6 +10,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
+
 @CrossOrigin(origins = "*", allowedHeaders = "*")
 @RestController
 @RequiredArgsConstructor
@@ -17,8 +19,10 @@ public class TravelController {
     private final TravelService travelService;
 
     //여행정보 작성하기
-    @PostMapping("/api/travel")
-    public ResponseEntity<Message> createTravel(@RequestBody TravelRequestDto requestDto, @AuthenticationPrincipal UserDetailsImpl userDetails) {
+
+    @PostMapping(consumes = {"multipart/form-data"},
+            value = "/api/travel")
+    public ResponseEntity<Message> createTravel(@ModelAttribute TravelRequestDto requestDto, @AuthenticationPrincipal UserDetailsImpl userDetails) throws IOException {
         Message message = new Message(true, "게시물 생성 완료", travelService.createTravel(requestDto, userDetails.getUser()));
         return ResponseEntity.ok(message);
     }
@@ -45,12 +49,13 @@ public class TravelController {
     }
 
     //여행정보 수정하기
-    @PutMapping("/api/travel/{travelId}")
-    public ResponseEntity<Message> updateTravel(@PathVariable Long travelId, @RequestBody TravelRequestDto requestDto, @AuthenticationPrincipal UserDetailsImpl userDetails) {
+    @PutMapping(consumes = {"multipart/form-data"},
+            value = "/api/travel/{travelId}")
+    public ResponseEntity<Message> updateTravel(@PathVariable Long travelId, @ModelAttribute TravelRequestDto requestDto, @AuthenticationPrincipal UserDetailsImpl userDetails) throws IOException {
         Message message = new Message(true, "수정 성공", travelService.updateTravel(travelId, requestDto, userDetails.getUser()));
         return ResponseEntity.ok(message);
     }
-    
+
     //여행정보 삭제하기
     @DeleteMapping("/api/travel/{travelId}")
     public ResponseEntity<Message> deleteTravel(@PathVariable Long travelId, @AuthenticationPrincipal UserDetailsImpl userDetails) {
@@ -65,7 +70,6 @@ public class TravelController {
         Message message = new Message(true, travelService.likeTravel(travelId, userDetails.getUser()), null);
         return ResponseEntity.ok(message);
     }
-
 
 
 }
