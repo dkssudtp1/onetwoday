@@ -39,9 +39,11 @@ public class UserService {
 
         // 회원 중복 확인
         Optional<User> found = userRepository.findByUsername(username);
+
         if (found.isPresent()) {
             throw new CustomException(DUPLICATE_USER);
         }
+
         found = userRepository.findByNickname(nickname);
         if (found.isPresent()) {
             throw new CustomException(DUPLICATE_NICKNAME);
@@ -73,17 +75,14 @@ public class UserService {
         String password = loginRequestDto.getPassword();
 
         // 사용자 확인
-        User user = userRepository.findByUsername(username).orElseThrow(
-                () -> new CustomException(MEMBER_NOT_FOUND)
-        );
-        // 비밀번호 확인
-        if(!passwordEncoder.matches(password, user.getPassword())){
+        Optional<User> user = userRepository.findByUsername(username);
+        if (!user.isPresent() && !passwordEncoder.matches(password, user.get().getPassword())) {
             throw new CustomException(MEMBER_NOT_FOUND);
         }
 
-        response.addHeader(JwtUtil.AUTHORIZATION_HEADER, jwtUtil.createToken(user.getUsername(), user.getRole()));
+        response.addHeader(JwtUtil.AUTHORIZATION_HEADER, jwtUtil.createToken(user.get().getUsername(), user.get().getRole()));
 
-        return Message.toResponseEntity(LOGIN_SUCCESS, jwtUtil.createToken(user.getUsername(), user.getRole()));
+        return Message.toResponseEntity(LOGIN_SUCCESS, jwtUtil.createToken(user.get().getUsername(), user.get().getRole()));
     }
 
 }
