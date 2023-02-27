@@ -19,7 +19,6 @@ public class TravelController {
     private final TravelService travelService;
 
     //여행정보 작성하기
-
     @PostMapping(consumes = {"multipart/form-data"},
             value = "/api/travel")
     public ResponseEntity<Message> createTravel(@ModelAttribute TravelRequestDto requestDto, @AuthenticationPrincipal UserDetailsImpl userDetails) throws IOException {
