@@ -34,5 +34,4 @@ public class ExceptionController {
         log.error("handleCustomException throw CustomException : {}", e.getExceptionMessage());
         return Message.toResponseEntity(e.getExceptionMessage());
     }
-
 }

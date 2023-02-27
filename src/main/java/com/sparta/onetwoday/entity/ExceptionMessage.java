@@ -12,6 +12,10 @@ public enum ExceptionMessage {
 
     /* 400 BAD_REQUEST : 잘못된 요청 */
     MISMATCH_REFRESH_TOKEN(BAD_REQUEST, "리프레시 토큰의 유저 정보가 일치하지 않습니다"),
+    INVALID_TOKEN(BAD_REQUEST, "Invalid JWT signature, 유효하지 않는 JWT 서명 입니다"),
+    UNSUPPORTED_TOKEN(BAD_REQUEST, "Unsupported JWT token, 지원되지 않는 JWT 토큰 입니다"),
+    ILLEAGAL_TOKEN(BAD_REQUEST, "JWT claims is empty, 잘못된 JWT 토큰 입니다."),
+
     CANNOT_FOLLOW_MYSELF(BAD_REQUEST, "자기 자신은 팔로우 할 수 없습니다"),
     NICKNAME_WITH_SPACES(BAD_REQUEST,"공백이 포함된 닉네임입니다."),
     BUDGET_INVALID_RANGE(BAD_REQUEST,"유효한 범위 내에 있는 예산이 아닙니다."),
@@ -33,8 +37,7 @@ public enum ExceptionMessage {
     /* 409 CONFLICT : Resource 의 현재 상태와 충돌. 보통 중복된 데이터 존재 */
     DUPLICATE_RESOURCE(CONFLICT, "데이터가 이미 존재합니다"),
     DUPLICATE_USER(CONFLICT,"중복된 사용자가 존재합니다."),
-    DUPLICATE_NICKNAME(CONFLICT,"중복된 닉네임이 존재합니다."),
-    ;
+    DUPLICATE_NICKNAME(CONFLICT,"중복된 닉네임이 존재합니다.");
 
     private final HttpStatus httpStatus;
     private final String detail;

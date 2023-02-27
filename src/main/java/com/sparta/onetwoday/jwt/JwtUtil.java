@@ -1,6 +1,7 @@
 package com.sparta.onetwoday.jwt;
 
 
+import com.sparta.onetwoday.dto.CustomException;
 import com.sparta.onetwoday.entity.UserRoleEnum;
 import com.sparta.onetwoday.security.UserDetailsServiceImpl;
 import io.jsonwebtoken.*;
@@ -20,6 +21,8 @@ import javax.servlet.http.HttpServletRequest;
 import java.security.Key;
 import java.util.Base64;
 import java.util.Date;
+
+import static com.sparta.onetwoday.entity.ExceptionMessage.*;
 
 
 @Slf4j
@@ -68,20 +71,23 @@ public class JwtUtil {
     }
 
     // 토큰 검증
-    public boolean validateToken(String token) {
+    public boolean validateToken(String token) throws CustomException {
         try {
             Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token);
             return true;
         } catch (SecurityException | MalformedJwtException e) {
             log.info("Invalid JWT signature, 유효하지 않는 JWT 서명 입니다.");
+            throw new CustomException(INVALID_TOKEN);
         } catch (ExpiredJwtException e) {
             log.info("Expired JWT token, 만료된 JWT token 입니다.");
+            throw new CustomException(MISMATCH_REFRESH_TOKEN);
         } catch (UnsupportedJwtException e) {
             log.info("Unsupported JWT token, 지원되지 않는 JWT 토큰 입니다.");
+            throw new CustomException(UNSUPPORTED_TOKEN);
         } catch (IllegalArgumentException e) {
             log.info("JWT claims is empty, 잘못된 JWT 토큰 입니다.");
+            throw new CustomException(ILLEAGAL_TOKEN);
         }
-        return false;
     }
 
     // 토큰에서 사용자 정보 가져오기
