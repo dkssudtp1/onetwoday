@@ -1,5 +1,6 @@
 package com.sparta.onetwoday.controller;
 
+import com.sparta.onetwoday.dto.CustomException;
 import com.sparta.onetwoday.dto.LoginRequestDto;
 import com.sparta.onetwoday.dto.SignupRequestDto;
 import com.sparta.onetwoday.dto.Message;
@@ -11,6 +12,9 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
+
+import static com.sparta.onetwoday.entity.ExceptionMessage.USER_FORBIDDEN;
+
 @CrossOrigin(origins = "*", allowedHeaders = "*")
 @Controller
 @RequiredArgsConstructor
@@ -32,8 +36,6 @@ public class UserController {
 
     @RequestMapping("/forbidden")
     public ResponseEntity<Message> getForbidden() {
-        Message message = new Message(false, "로그인을 안했거나 권한이 없습니다.", null);
-
-        return ResponseEntity.badRequest().body(message);
+        throw new CustomException(USER_FORBIDDEN);
     }
 }

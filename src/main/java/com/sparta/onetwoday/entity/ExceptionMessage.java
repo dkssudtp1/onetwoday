@@ -26,6 +26,10 @@ public enum ExceptionMessage {
     UNAUTHORIZED_ADMIN(UNAUTHORIZED, "관리자가 아닙니다."),
     UNAUTHORIZED_UPDATE_OR_DELETE(UNAUTHORIZED,"작성자만 수정/삭제할 수 있습니다."),
 
+    /* 403 FORBIDDEN : 권한 없음 */
+    USER_FORBIDDEN(FORBIDDEN, "권한이 없습니다."),
+
+
     /* 404 NOT_FOUND : Resource 를 찾을 수 없음 */
     MEMBER_NOT_FOUND(NOT_FOUND, "해당 유저 정보를 찾을 수 없습니다"),
     BOARD_NOT_FOUND(NOT_FOUND, "해당 게시물을 찾을 수 없습니다"),
