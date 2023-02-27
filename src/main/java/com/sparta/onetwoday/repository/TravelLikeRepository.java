@@ -8,6 +8,6 @@ import java.util.Optional;
 public interface TravelLikeRepository extends JpaRepository<TravelLike, Long> {
     Optional<TravelLike> findByUserIdAndTravelId(Long userId, Long travelId);
 
-//    void deleteByUserIdandTravelId(Long userId, Long travelId);
+    void deleteByUserIdAndTravelId(Long userId, Long travelId);
     Long countByTravelId(Long travelId);
 }

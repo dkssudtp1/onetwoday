@@ -20,6 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.RequestBody;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -28,7 +29,6 @@ import java.util.List;
 public class CommentService {
     private final CommentRepository commentRepository;
     private final TravelRepository travelRepository;
-    private final JwtUtil jwtUtil;
     private final UserRepository userRepository;
 
 
@@ -55,13 +55,22 @@ public class CommentService {
         } else {
             throw new IllegalArgumentException("작성자만 삭제/수정할 수 있습니다.");
         }
-        return "댓글이 삭제 성공.";
+        return "댓글 삭제 성공.";
     }
 
     //댓글 리스트
     @Transactional(readOnly = true)
-    public List<CommentResponseDto> commentsList(Long travelId) {
-        return commentRepository.findByIdOrderByCreatedAtDesc(travelId);
+    public List<CommentResponseDto> getCommentList(Long travelId) {
+        List<Comment> comments = commentRepository.findByTravelIdOrderByCreatedAtDesc(travelId);
+        List<CommentResponseDto> responseDtos = new ArrayList<>();
+
+        if(!comments.isEmpty()) {
+            for(Comment comment : comments) {
+                responseDtos.add(new CommentResponseDto(comment));
+            }
+        }
+
+        return responseDtos;
     }
     //권한 확인하기
     public boolean hasAuthority(User user, Comment comment) {

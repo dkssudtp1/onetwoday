@@ -15,7 +15,7 @@ public class Comment extends TimeStamped {
     private Long id;
 
     @Column(nullable = false)
-    private String comments;
+    private String comment;
 
     @ManyToOne
     @JoinColumn(name = "USER_ID", nullable = false)
@@ -28,10 +28,10 @@ public class Comment extends TimeStamped {
     public Comment(CommentRequestDto requestDto, Travel travel, User user) {
         this.user = user;
         this.travel = travel;
-        this.comments = requestDto.getComments();
+        this.comment = requestDto.getComment();
     }
 
     public void updateComment(CommentRequestDto commentRequestDto) {
-        this.comments = commentRequestDto.getComments();
+        this.comment = commentRequestDto.getComment();
     }
 }

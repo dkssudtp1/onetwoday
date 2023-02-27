@@ -23,7 +23,7 @@ public class CommentController {
     @PostMapping("/comment")
     public ResponseEntity<Message> createComment(@PathVariable Long travelId, @RequestBody CommentRequestDto commentRequestDto, @AuthenticationPrincipal UserDetailsImpl userDetails) {
 
-        Message message = new Message(true,"댓글 생성 완료", commentService.createComment(travelId, commentRequestDto, userDetails.getUser()));
+        Message message = new Message(true,"댓글 작성 성공", commentService.createComment(travelId, commentRequestDto, userDetails.getUser()));
         return ResponseEntity.ok(message);
 
     }

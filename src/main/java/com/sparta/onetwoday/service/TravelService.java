@@ -1,9 +1,6 @@
 package com.sparta.onetwoday.service;
 
-import com.sparta.onetwoday.dto.TravelCommentDto;
-import com.sparta.onetwoday.dto.TravelListResponseDto;
-import com.sparta.onetwoday.dto.TravelRequestDto;
-import com.sparta.onetwoday.dto.TravelResponseDto;
+import com.sparta.onetwoday.dto.*;
 import com.sparta.onetwoday.entity.Travel;
 import com.sparta.onetwoday.entity.TravelLike;
 import com.sparta.onetwoday.entity.User;
@@ -26,6 +23,8 @@ import java.util.List;
 public class TravelService {
     private final TravelRepository travelRepository;
     private final TravelLikeRepository travelLikeRepository;
+
+    private final CommentService commentService;
 
 
     //게시물 작성하기
@@ -127,9 +126,9 @@ public class TravelService {
         Travel travel = travelRepository.findById(travelId).orElseThrow(
                 () -> new IllegalArgumentException("게시판이 존재하지 않습니다.")
         );
-//        List<CommentResponseDto> commentResponseDtos = commentService.getCommnetList(travel.getId());
+        List<CommentResponseDto> commentResponseDtos = commentService.getCommentList(travel.getId());
         Long likes = travelLikeRepository.countByTravelId(travel.getId());
-        return new TravelCommentDto(travel, likes, " ");
+        return new TravelCommentDto(travel, likes, commentResponseDtos);
     }
 
     //게시물 수정하기
@@ -148,8 +147,9 @@ public class TravelService {
         } else {
             throw new IllegalArgumentException("작성자만 수정/삭제할 수 있습니다.");
         }
+        List<CommentResponseDto> commentResponseDtos = commentService.getCommentList(travel.getId());
         Long likes = travelLikeRepository.countByTravelId(travel.getId());
-        return new TravelCommentDto(travel, likes, " ");
+        return new TravelCommentDto(travel, likes, commentResponseDtos);
     }
 
     //게시물 삭제하기
@@ -176,7 +176,7 @@ public class TravelService {
             travelLikeRepository.saveAndFlush(new TravelLike(travel,user));
             return "좋아요를 하셨습니다.";
         } else {
-            travelLikeRepository.findByUserIdAndTravelId(user.getId(), travelId);
+            travelLikeRepository.deleteByUserIdAndTravelId(user.getId(), travelId);
             return "좋아요를 취소하셨습니다.";
         }
     }

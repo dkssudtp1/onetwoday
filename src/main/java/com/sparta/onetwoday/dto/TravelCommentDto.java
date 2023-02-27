@@ -5,6 +5,7 @@ import lombok.Getter;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Getter
 public class TravelCommentDto {
@@ -17,10 +18,10 @@ public class TravelCommentDto {
     private Long likeCount; //좋아요 구현되면 Long으로 바꿔야함
     private LocalDateTime createdAt;
 
-//    private List<CommentResponseDto> comments;
-    private String comments;
+    private List<CommentResponseDto> comments;
+//    private String comments;
 
-    public TravelCommentDto(Travel travel, Long likeCount, String comments) {
+    public TravelCommentDto(Travel travel, Long likeCount, List<CommentResponseDto> comments) {
 //        this.id = travel.getId();
         this.title = travel.getTitle();
         this.username = travel.getUser().getUsername();

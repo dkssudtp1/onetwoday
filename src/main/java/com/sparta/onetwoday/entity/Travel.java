@@ -28,9 +28,6 @@ public class Travel extends TimeStamped {
     @JoinColumn(name = "USERS_ID")
     private User user;
 
-//    @OneToMany(mappedBy = "board", fetch = FetchType.LAZY)
-//    private List<Comment> comment = new ArrayList<>();
-
     @Column
     private Integer budget;
 
