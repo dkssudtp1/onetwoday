@@ -14,6 +14,8 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.servlet.http.HttpServletResponse;
 import java.util.Optional;
 
+import static com.sparta.onetwoday.entity.ExceptionMessage.*;
+
 @Service
 @RequiredArgsConstructor
 public class UserService {
@@ -33,20 +35,25 @@ public class UserService {
         // 회원 중복 확인
         Optional<User> found = userRepository.findByUsername(username);
         if (found.isPresent()) {
-            throw new IllegalArgumentException("중복된 사용자가 존재합니다.");
+            throw new IllegalArgumentException(DUPLICATE_USER.getMessage());
         }
         found = userRepository.findByNickname(nickname);
         if (found.isPresent()) {
-            throw new IllegalArgumentException("중복된 닉네임이 존재합니다.");
+            throw new IllegalArgumentException(DUPLICATE_NICKNAME.getMessage());
         }
 
         // 사용자 ROLE 확인
         UserRoleEnum role = UserRoleEnum.USER;
         if (signupRequestDto.isAdmin()) {
             if (!signupRequestDto.getAdminToken().equals(ADMIN_TOKEN)) {
-                throw new IllegalArgumentException("관리자 암호가 틀려 등록이 불가능합니다.");
+                throw new IllegalArgumentException(ADMIN_PASSWORD_IS_INCORRECT.getMessage());
             }
             role = UserRoleEnum.ADMIN;
+        }
+
+        //닉네임이 공백포함인지 확인
+        if(nickname.replaceAll(" ","").equals("")) {
+            throw new IllegalArgumentException(NICKNAME_WITH_SPACES.getMessage());
         }
 
         User user = new User(username, nickname, password, role);
@@ -60,11 +67,11 @@ public class UserService {
 
         // 사용자 확인
         User user = userRepository.findByUsername(username).orElseThrow(
-                () -> new IllegalArgumentException("등록된 사용자가 없습니다.")
+                () -> new IllegalArgumentException(COULD_NOT_FOUND_USER.getMessage())
         );
         // 비밀번호 확인
         if(!passwordEncoder.matches(password, user.getPassword())){
-            throw  new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
+            throw  new IllegalArgumentException(PASSWORDS_DO_NOT_MATCH.getMessage());
         }
 
         response.addHeader(JwtUtil.AUTHORIZATION_HEADER, jwtUtil.createToken(user.getUsername(), user.getRole()));

@@ -30,8 +30,8 @@ public class CommentController {
 
     //댓글 삭제
     @DeleteMapping("/comment/{commentId}")
-    public ResponseEntity<Message> deleteComment(@PathVariable Long commentId, @AuthenticationPrincipal UserDetailsImpl userDetails) {
-        Message message = new Message(true, commentService.deleteComment(commentId, userDetails.getUser()), null);
+    public ResponseEntity<Message> deleteComment(@PathVariable(name = "travelId") Long travelId, @PathVariable(name = "commentId") Long commentId, @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        Message message = new Message(true, "댓글 삭제 성공", commentService.deleteComment(travelId, commentId, userDetails.getUser()));
         return ResponseEntity.ok(message);
     }
 }
