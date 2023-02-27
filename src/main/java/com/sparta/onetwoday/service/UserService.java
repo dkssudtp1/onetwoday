@@ -2,12 +2,14 @@ package com.sparta.onetwoday.service;
 
 import com.sparta.onetwoday.dto.CustomException;
 import com.sparta.onetwoday.dto.LoginRequestDto;
+import com.sparta.onetwoday.dto.Message;
 import com.sparta.onetwoday.dto.SignupRequestDto;
 import com.sparta.onetwoday.entity.User;
 import com.sparta.onetwoday.entity.UserRoleEnum;
 import com.sparta.onetwoday.jwt.JwtUtil;
 import com.sparta.onetwoday.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -16,6 +18,8 @@ import javax.servlet.http.HttpServletResponse;
 import java.util.Optional;
 
 import static com.sparta.onetwoday.entity.ExceptionMessage.*;
+import static com.sparta.onetwoday.entity.SuccessMessage.LOGIN_SUCCESS;
+import static com.sparta.onetwoday.entity.SuccessMessage.SIGN_UP_SUCCESS;
 
 @Service
 @RequiredArgsConstructor
@@ -28,7 +32,7 @@ public class UserService {
     private static final String ADMIN_TOKEN = "AAABnvxRVklrnYxKZ0aHgTBcXukeZygoC";
 
     @Transactional
-    public void signup(SignupRequestDto signupRequestDto) {
+    public ResponseEntity<Message> signup(SignupRequestDto signupRequestDto) {
         String username = signupRequestDto.getUsername();
         String password = passwordEncoder.encode(signupRequestDto.getPassword());
         String nickname = signupRequestDto.getNickname();
@@ -59,10 +63,12 @@ public class UserService {
 
         User user = new User(username, nickname, password, role);
         userRepository.save(user);
+
+        return Message.toResponseEntity(SIGN_UP_SUCCESS);
     }
 
     @Transactional(readOnly = true)
-    public String login(LoginRequestDto loginRequestDto, HttpServletResponse response) {
+    public ResponseEntity<Message> login(LoginRequestDto loginRequestDto, HttpServletResponse response) {
         String username = loginRequestDto.getUsername();
         String password = loginRequestDto.getPassword();
 
@@ -77,7 +83,7 @@ public class UserService {
 
         response.addHeader(JwtUtil.AUTHORIZATION_HEADER, jwtUtil.createToken(user.getUsername(), user.getRole()));
 
-        return jwtUtil.createToken(user.getUsername(), user.getRole());
+        return Message.toResponseEntity(LOGIN_SUCCESS, jwtUtil.createToken(user.getUsername(), user.getRole()));
     }
 
 }

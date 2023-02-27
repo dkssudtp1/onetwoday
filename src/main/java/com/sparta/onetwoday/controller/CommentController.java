@@ -19,16 +19,12 @@ public class CommentController {
     //댓글 작성
     @PostMapping("/comment")
     public ResponseEntity<Message> createComment(@PathVariable Long travelId, @RequestBody CommentRequestDto commentRequestDto, @AuthenticationPrincipal UserDetailsImpl userDetails) {
-
-        Message message = new Message(true,"댓글 작성 성공", commentService.createComment(travelId, commentRequestDto, userDetails.getUser()));
-        return ResponseEntity.ok(message);
-
+        return commentService.createComment(travelId, commentRequestDto, userDetails.getUser());
     }
 
     //댓글 삭제
     @DeleteMapping("/comment/{commentId}")
     public ResponseEntity<Message> deleteComment(@PathVariable(name = "travelId") Long travelId, @PathVariable(name = "commentId") Long commentId, @AuthenticationPrincipal UserDetailsImpl userDetails) {
-        Message message = new Message(true, "댓글 삭제 성공", commentService.deleteComment(travelId, commentId, userDetails.getUser()));
-        return ResponseEntity.ok(message);
+        return commentService.deleteComment(travelId, commentId, userDetails.getUser());
     }
 }

@@ -21,19 +21,13 @@ public class UserController {
     @ResponseBody
     @PostMapping("/signup")
     public ResponseEntity<Message> signup(@RequestBody @Valid SignupRequestDto signupRequestDto) {
-        userService.signup(signupRequestDto);
-
-        Message message = new Message(true, "회원가입 완료", null);
-
-        return ResponseEntity.ok(message);
+        return userService.signup(signupRequestDto);
     }
 
     @ResponseBody
     @PostMapping("/login")
     public ResponseEntity<Message> login(@RequestBody LoginRequestDto loginRequestDto, HttpServletResponse response) {
-        Message message = new Message(true, "로그인 완료", userService.login(loginRequestDto, response));
-
-        return ResponseEntity.ok(message);
+        return userService.login(loginRequestDto, response);
     }
 
     @RequestMapping("/forbidden")

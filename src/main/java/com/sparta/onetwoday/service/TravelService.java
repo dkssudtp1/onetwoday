@@ -13,10 +13,10 @@ import com.sparta.onetwoday.repository.TravelLikeRepository;
 import com.sparta.onetwoday.repository.TravelRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -26,6 +26,7 @@ import java.util.List;
 import java.util.UUID;
 
 import static com.sparta.onetwoday.entity.ExceptionMessage.*;
+import static com.sparta.onetwoday.entity.SuccessMessage.*;
 
 
 @Service
@@ -44,7 +45,7 @@ public class TravelService {
 
     //게시물 작성하기
     @Transactional
-    public TravelResponseDto createTravel(@RequestBody TravelRequestDto requestDto, User user) throws IOException {
+    public ResponseEntity<Message> createTravel(@RequestBody TravelRequestDto requestDto, User user) throws IOException {
         Integer budget = budgetReturn(requestDto);
         String fileName = "";
         if(!requestDto.getImages().equals("")) {
@@ -71,12 +72,13 @@ public class TravelService {
         }
 
         Travel travel = travelRepository.saveAndFlush(new Travel(requestDto, user, budget, amazonS3Client.getUrl(bucketName, fileName).toString()));
-        return new TravelResponseDto(travel);
+
+        return Message.toResponseEntity(BOARD_POST_SUCCESS, new TravelResponseDto(travel));
     }
 
     //나의 게시물 리스트 조회하기
     @Transactional
-    public List<TravelListResponseDto> getMyList(User user) {
+    public ResponseEntity<Message> getMyList(User user) {
 
         List<Travel> travels = travelRepository.findAllByUser(user);
         List<TravelListResponseDto> travelListResponseDtos = new ArrayList<>();
@@ -86,7 +88,7 @@ public class TravelService {
             travelListResponseDtos.add(new TravelListResponseDto(travel, likes));
         }
 
-        return travelListResponseDtos;
+        return Message.toResponseEntity(BOARD_MY_LIST_GET_SUCCESS, travelListResponseDtos);
 
 //        return travels.stream().map(travel -> new TravelListResponseDto((Travel) travels,likes)).collect(Collectors.toList());
 
@@ -94,7 +96,7 @@ public class TravelService {
 
     //무작위(랜던) 리스트 8개 조회하기
     @Transactional(readOnly = true)
-    public List<TravelListResponseDto> getRandomList() {
+    public ResponseEntity<Message> getRandomList() {
 //        Long count = travelRepository.countBy();
 //        List<TravelListResponseDto> travelListResponse = new ArrayList<>();
 //        if(count < 8) {
@@ -122,7 +124,7 @@ public class TravelService {
 
             }
 
-            return responseDtos;
+            return Message.toResponseEntity(BOARD_GET_SUCCESS, responseDtos);
         }
         List<TravelListResponseDto> response = new ArrayList<>();
 
@@ -135,24 +137,25 @@ public class TravelService {
         }
 
 
-        return response;
+        return Message.toResponseEntity(BOARD_GET_SUCCESS, response);
 
     }
 
     //상세 조회하기
     @Transactional(readOnly = true)
-    public TravelCommentDto getDetail(Long travelId) {
+    public ResponseEntity<Message> getDetail(Long travelId) {
         Travel travel = travelRepository.findById(travelId).orElseThrow(
                 () -> new CustomException(BOARD_NOT_FOUND)
         );
         List<CommentResponseDto> commentResponseDtos = commentService.getCommentList(travel.getId());
         Long likes = travelLikeRepository.countByTravelId(travel.getId());
-        return new TravelCommentDto(travel, likes, commentResponseDtos);
+
+        return Message.toResponseEntity(BOARD_DETAIL_GET_SUCCESS, new TravelCommentDto(travel, likes, commentResponseDtos));
     }
 
     //게시물 수정하기
     @Transactional
-    public TravelCommentDto updateTravel(Long travelId, TravelRequestDto requestDto, User user) throws IOException {
+    public ResponseEntity<Message> updateTravel(Long travelId, TravelRequestDto requestDto, User user) throws IOException {
         String fileName = requestDto.getImages().getOriginalFilename();
 
         Travel travel = travelRepository.findById(travelId).orElseThrow(
@@ -177,18 +180,21 @@ public class TravelService {
         }
         List<CommentResponseDto> commentResponseDtos = commentService.getCommentList(travel.getId());
         Long likes = travelLikeRepository.countByTravelId(travel.getId());
-        return new TravelCommentDto(travel, likes, commentResponseDtos);
+
+        return Message.toResponseEntity(BOARD_DETAIL_GET_SUCCESS, new TravelCommentDto(travel, likes, commentResponseDtos));
     }
 
     //게시물 삭제하기
     @Transactional
-    public void deleteTravel(Long travelId, User user) {
+    public ResponseEntity<Message> deleteTravel(Long travelId, User user) {
         Travel travel = travelRepository.findById(travelId).orElseThrow(
                 () -> new CustomException(BOARD_NOT_FOUND)
         );
         if (hasAuthority(user, travel)) {
 //            commentRepository.deleteByTravelId(travelId);
-            travelRepository.deleteById(travelId);
+
+            return Message.toResponseEntity(BOARD_DELETE_SUCCESS);
+
         } else {
             throw new CustomException(UNAUTHORIZED_UPDATE_OR_DELETE);
         }
@@ -196,16 +202,16 @@ public class TravelService {
 
     //게시물 좋아요
     @Transactional
-    public String likeTravel(Long travelId, User user) {
+    public ResponseEntity<Message> likeTravel(Long travelId, User user) {
         Travel travel = travelRepository.findById(travelId).orElseThrow(
                 () -> new CustomException(BOARD_NOT_FOUND)
         );
         if (travelLikeRepository.findByUserIdAndTravelId(user.getId(), travelId).isEmpty()) {
             travelLikeRepository.saveAndFlush(new TravelLike(travel, user));
-            return "좋아요를 하셨습니다.";
+            return Message.toResponseEntity(LIKE_POST_SUCCESS);
         } else {
             travelLikeRepository.deleteByUserIdAndTravelId(user.getId(), travelId);
-            return "좋아요를 취소하셨습니다.";
+            return Message.toResponseEntity(LIKE_DELETE_SUCCESS);
         }
     }
 
