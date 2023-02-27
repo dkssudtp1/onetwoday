@@ -39,8 +39,6 @@ public class TravelService {
     @Value("${cloud.aws.s3.bucket}")
     private String bucketName;
 
-    private String bucketUrl = "https://onetwoday.s3.ap-northeast-2.amazonaws.com/";
-
 
     //게시물 작성하기
     @Transactional
