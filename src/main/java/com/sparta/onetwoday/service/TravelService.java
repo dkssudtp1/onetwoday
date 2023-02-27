@@ -46,8 +46,11 @@ public class TravelService {
     @Transactional
     public TravelResponseDto createTravel(@RequestBody TravelRequestDto requestDto, User user) throws IOException {
         Integer budget = budgetReturn(requestDto);
-        String fileName =  UUID.randomUUID() + "_" + requestDto.getImages().getOriginalFilename();
-        s3ImageUpload(requestDto.getImages(), fileName);
+        String fileName = "";
+        if(!requestDto.getImages().equals("")) {
+            fileName = UUID.randomUUID() + "_" + requestDto.getImages().getOriginalFilename();
+            s3ImageUpload(requestDto.getImages(), fileName);
+        }
 //        switch (requestDto.getBudget()) {
 //            case 0:
 //                budget = 0;
