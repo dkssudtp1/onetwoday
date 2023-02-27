@@ -1,5 +1,6 @@
 package com.sparta.onetwoday.service;
 
+import com.sparta.onetwoday.dto.CustomException;
 import com.sparta.onetwoday.dto.LoginRequestDto;
 import com.sparta.onetwoday.dto.SignupRequestDto;
 import com.sparta.onetwoday.entity.User;
@@ -35,25 +36,25 @@ public class UserService {
         // 회원 중복 확인
         Optional<User> found = userRepository.findByUsername(username);
         if (found.isPresent()) {
-            throw new IllegalArgumentException(DUPLICATE_USER.getMessage());
+            throw new CustomException(DUPLICATE_USER);
         }
         found = userRepository.findByNickname(nickname);
         if (found.isPresent()) {
-            throw new IllegalArgumentException(DUPLICATE_NICKNAME.getMessage());
+            throw new CustomException(DUPLICATE_NICKNAME);
         }
 
         // 사용자 ROLE 확인
         UserRoleEnum role = UserRoleEnum.USER;
         if (signupRequestDto.isAdmin()) {
             if (!signupRequestDto.getAdminToken().equals(ADMIN_TOKEN)) {
-                throw new IllegalArgumentException(ADMIN_PASSWORD_IS_INCORRECT.getMessage());
+                throw new CustomException(UNAUTHORIZED_ADMIN);
             }
             role = UserRoleEnum.ADMIN;
         }
 
         //닉네임이 공백포함인지 확인
         if(nickname.replaceAll(" ","").equals("")) {
-            throw new IllegalArgumentException(NICKNAME_WITH_SPACES.getMessage());
+            throw new CustomException(NICKNAME_WITH_SPACES);
         }
 
         User user = new User(username, nickname, password, role);
@@ -67,11 +68,11 @@ public class UserService {
 
         // 사용자 확인
         User user = userRepository.findByUsername(username).orElseThrow(
-                () -> new IllegalArgumentException(COULD_NOT_FOUND_USER.getMessage())
+                () -> new CustomException(MEMBER_NOT_FOUND)
         );
         // 비밀번호 확인
         if(!passwordEncoder.matches(password, user.getPassword())){
-            throw  new IllegalArgumentException(PASSWORDS_DO_NOT_MATCH.getMessage());
+            throw new CustomException(MEMBER_NOT_FOUND);
         }
 
         response.addHeader(JwtUtil.AUTHORIZATION_HEADER, jwtUtil.createToken(user.getUsername(), user.getRole()));

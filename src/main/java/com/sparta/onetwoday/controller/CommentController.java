@@ -2,16 +2,13 @@ package com.sparta.onetwoday.controller;
 
 
 import com.sparta.onetwoday.dto.CommentRequestDto;
-import com.sparta.onetwoday.dto.CommentResponseDto;
-import com.sparta.onetwoday.entity.Message;
+import com.sparta.onetwoday.dto.Message;
 import com.sparta.onetwoday.security.UserDetailsImpl;
 import com.sparta.onetwoday.service.CommentService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
-
-import javax.servlet.http.HttpServletRequest;
 
 @RestController
 @RequestMapping("/api/travel/{travelId}")

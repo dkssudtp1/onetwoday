@@ -1,6 +1,10 @@
 package com.sparta.onetwoday.controller;
 
-import com.sparta.onetwoday.entity.Message;
+import com.sparta.onetwoday.dto.CustomException;
+import com.sparta.onetwoday.dto.Message;
+import com.sparta.onetwoday.entity.ExceptionMessage;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -9,53 +13,26 @@ import org.springframework.security.access.AccessDeniedException;
 import org.springframework.validation.BindException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+import javax.validation.ConstraintViolationException;
 import java.nio.charset.Charset;
 
-@ControllerAdvice
+import static com.sparta.onetwoday.entity.ExceptionMessage.DUPLICATE_RESOURCE;
+
+@Slf4j
+@RestControllerAdvice
 public class ExceptionController {
-
-    // 400
-    @ExceptionHandler({RuntimeException.class})
-    public ResponseEntity<Object> BadRequestException(final RuntimeException ex) {
-        Message message = new Message(false, ex.getMessage(), ex);
-
-        HttpHeaders headers= new HttpHeaders();
-        headers.setContentType(new MediaType("application", "json", Charset.forName("UTF-8")));
-
-        return new ResponseEntity<>(message, headers, HttpStatus.BAD_REQUEST);
+    @ExceptionHandler(value = { ConstraintViolationException.class, DataIntegrityViolationException.class})
+    protected ResponseEntity<Message> handleDataException() {
+        log.error("handleDataException throw Exception : {}", DUPLICATE_RESOURCE);
+        return Message.toResponseEntity(DUPLICATE_RESOURCE);
     }
 
-    // 401
-    @ExceptionHandler({AccessDeniedException.class})
-    public ResponseEntity handleAccessDeniedException(final AccessDeniedException ex) {
-        Message message = new Message(false, ex.getMessage(), ex);
-
-        HttpHeaders headers= new HttpHeaders();
-        headers.setContentType(new MediaType("application", "json", Charset.forName("UTF-8")));
-
-        return new ResponseEntity<>(message, headers, HttpStatus.UNAUTHORIZED);
-    }
-
-    //정규식
-    @ExceptionHandler({BindException.class})
-    public ResponseEntity bindException(BindException ex) {
-        Message message = new Message(false, ex.getFieldError().getDefaultMessage(), ex.getBindingResult().getTarget());
-
-        HttpHeaders headers= new HttpHeaders();
-        headers.setContentType(new MediaType("application", "json", Charset.forName("UTF-8")));
-
-        return new ResponseEntity<>(message, headers, HttpStatus.BAD_REQUEST);
-    }
-    // 500
-    @ExceptionHandler({Exception.class})
-    public ResponseEntity handleAll(final Exception ex) {
-        Message message = new Message(false, ex.getMessage(), ex);
-
-        HttpHeaders headers= new HttpHeaders();
-        headers.setContentType(new MediaType("application", "json", Charset.forName("UTF-8")));
-
-        return new ResponseEntity<>(message, headers, HttpStatus.INTERNAL_SERVER_ERROR);
+    @ExceptionHandler(value = { CustomException.class })
+    protected ResponseEntity<Message> handleCustomException(CustomException e) {
+        log.error("handleCustomException throw CustomException : {}", e.getExceptionMessage());
+        return Message.toResponseEntity(e.getExceptionMessage());
     }
 
 }

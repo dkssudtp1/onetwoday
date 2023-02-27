@@ -1,7 +1,7 @@
 package com.sparta.onetwoday.jwt;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.sparta.onetwoday.entity.Message;
+import com.sparta.onetwoday.dto.Message;
 import io.jsonwebtoken.Claims;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

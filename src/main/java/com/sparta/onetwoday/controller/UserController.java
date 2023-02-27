@@ -2,10 +2,9 @@ package com.sparta.onetwoday.controller;
 
 import com.sparta.onetwoday.dto.LoginRequestDto;
 import com.sparta.onetwoday.dto.SignupRequestDto;
-import com.sparta.onetwoday.entity.Message;
+import com.sparta.onetwoday.dto.Message;
 import com.sparta.onetwoday.service.UserService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;

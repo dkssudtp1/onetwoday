@@ -1,39 +1,41 @@
 package com.sparta.onetwoday.entity;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import org.springframework.http.HttpStatus;
+
+import static org.springframework.http.HttpStatus.*;
 
 @Getter
+@AllArgsConstructor
 public enum ExceptionMessage {
-    BOARD_HAS_BEEN_DELETED("삭제된 게시물입니다."),
-    BOARD_DOES_NOT_EXIEST("게시글이 존재하지 않습니다."),
 
-    COMMENT_HAS_BEEN_DELETED("삭제된 댓글입니다."),
-    COMMENT_DOES_NOT_EXIEST("댓글이 존재하지 않습니다."),
+    /* 400 BAD_REQUEST : 잘못된 요청 */
+    MISMATCH_REFRESH_TOKEN(BAD_REQUEST, "리프레시 토큰의 유저 정보가 일치하지 않습니다"),
+    CANNOT_FOLLOW_MYSELF(BAD_REQUEST, "자기 자신은 팔로우 할 수 없습니다"),
+    NICKNAME_WITH_SPACES(BAD_REQUEST,"공백이 포함된 닉네임입니다."),
+    BUDGET_INVALID_RANGE(BAD_REQUEST,"유효한 범위 내에 있는 예산이 아닙니다."),
+    IMAGE_INVALID(BAD_REQUEST,"이미지가 잘못 되었습니다."),
 
-    COULD_NOT_FOUND_USER("등록된 사용자가 없습니다."),
+    /* 401 UNAUTHORIZED : 인증되지 않은 사용자 */
+    UNAUTHORIZED_MEMBER(UNAUTHORIZED, "현재 내 계정 정보가 존재하지 않습니다"),
+    UNAUTHORIZED_ADMIN(UNAUTHORIZED, "관리자가 아닙니다."),
+    UNAUTHORIZED_UPDATE_OR_DELETE(UNAUTHORIZED,"작성자만 수정/삭제할 수 있습니다."),
 
-    PASSWORDS_DO_NOT_MATCH("비밀번호가 일치하지 않습니다."),
+    /* 404 NOT_FOUND : Resource 를 찾을 수 없음 */
+    MEMBER_NOT_FOUND(NOT_FOUND, "해당 유저 정보를 찾을 수 없습니다"),
+    BOARD_NOT_FOUND(NOT_FOUND, "해당 게시물을 찾을 수 없습니다"),
+    COMMENT_NOT_FOUND(NOT_FOUND, "해당 댓글을 찾을 수 없습니다"),
+    REFRESH_TOKEN_NOT_FOUND(NOT_FOUND, "로그아웃 된 사용자입니다"),
+    NOT_FOLLOW(NOT_FOUND, "팔로우 중이지 않습니다"),
+    LIKE_NOT_FOUND(NOT_FOUND, "좋아요를 취소할 수 없습니다."),
 
-    ALREADY_EXIST_DATA("이미 처리된 요청입니다."),
+    /* 409 CONFLICT : Resource 의 현재 상태와 충돌. 보통 중복된 데이터 존재 */
+    DUPLICATE_RESOURCE(CONFLICT, "데이터가 이미 존재합니다"),
+    DUPLICATE_USER(CONFLICT,"중복된 사용자가 존재합니다."),
+    DUPLICATE_NICKNAME(CONFLICT,"중복된 닉네임이 존재합니다."),
+    ;
 
-    ADMIN_PASSWORD_IS_INCORRECT("관리자 암호가 틀려 등록이 불가능합니다."),
-
-    DUPLICATE_USER("중복된 사용자가 존재합니다."),
-
-    DUPLICATE_NICKNAME("중복된 닉네임이 존재합니다."),
-
-    NICKNAME_WITH_SPACES("공백이 포함된 닉네임입니다."),
-
-    COULD_NOT_FOUND_LIKE("좋아요를 취소할 수 없습니다."),
-
-    ILLEGAL_ACCESS_UPDATE_OR_DELETE("작성자만 수정/삭제할 수 있습니다."),
-
-    BUDGET_NOT_WITHIN_VALID_RANGE("유효한 범위 내에 있는 예산이 아닙니다."),
-
-    IMAGE_IS_INVALID("이미지가 잘못 되었습니다.");
-
-    private final String message;
-    ExceptionMessage(String message) {
-        this.message = message;
-    }
+    private final HttpStatus httpStatus;
+    private final String detail;
 }

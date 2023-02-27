@@ -67,7 +67,7 @@ public class TravelService {
 //        }
 
         if (budget == null) {
-            throw new NullPointerException(BUDGET_NOT_WITHIN_VALID_RANGE.getMessage());
+            throw new CustomException(BUDGET_INVALID_RANGE);
         }
 
         Travel travel = travelRepository.saveAndFlush(new Travel(requestDto, user, budget, amazonS3Client.getUrl(bucketName, fileName).toString()));
@@ -143,7 +143,7 @@ public class TravelService {
     @Transactional(readOnly = true)
     public TravelCommentDto getDetail(Long travelId) {
         Travel travel = travelRepository.findById(travelId).orElseThrow(
-                () -> new IllegalArgumentException(BOARD_DOES_NOT_EXIEST.getMessage())
+                () -> new CustomException(BOARD_NOT_FOUND)
         );
         List<CommentResponseDto> commentResponseDtos = commentService.getCommentList(travel.getId());
         Long likes = travelLikeRepository.countByTravelId(travel.getId());
@@ -156,12 +156,12 @@ public class TravelService {
         String fileName = requestDto.getImages().getOriginalFilename();
 
         Travel travel = travelRepository.findById(travelId).orElseThrow(
-                () -> new IllegalArgumentException(BOARD_DOES_NOT_EXIEST.getMessage())
+                () -> new CustomException(BOARD_NOT_FOUND)
         );
 
         Integer budget = budgetReturn(requestDto);
         if (budget == null) {
-            throw new NullPointerException(BUDGET_NOT_WITHIN_VALID_RANGE.getMessage());
+            throw new CustomException(BUDGET_INVALID_RANGE);
         }
         
         //요청받은거랑 db 이미지명이 같을경우
@@ -173,7 +173,7 @@ public class TravelService {
         if (hasAuthority(user, travel)) {
             travel.update(requestDto, budget, amazonS3Client.getUrl(bucketName, fileName).toString());
         } else {
-            throw new IllegalArgumentException(ILLEGAL_ACCESS_UPDATE_OR_DELETE.getMessage());
+            throw new CustomException(UNAUTHORIZED_UPDATE_OR_DELETE);
         }
         List<CommentResponseDto> commentResponseDtos = commentService.getCommentList(travel.getId());
         Long likes = travelLikeRepository.countByTravelId(travel.getId());
@@ -184,13 +184,13 @@ public class TravelService {
     @Transactional
     public void deleteTravel(Long travelId, User user) {
         Travel travel = travelRepository.findById(travelId).orElseThrow(
-                () -> new IllegalArgumentException(BOARD_DOES_NOT_EXIEST.getMessage())
+                () -> new CustomException(BOARD_NOT_FOUND)
         );
         if (hasAuthority(user, travel)) {
 //            commentRepository.deleteByTravelId(travelId);
             travelRepository.deleteById(travelId);
         } else {
-            throw new IllegalArgumentException(ILLEGAL_ACCESS_UPDATE_OR_DELETE.getMessage());
+            throw new CustomException(UNAUTHORIZED_UPDATE_OR_DELETE);
         }
     }
 
@@ -198,7 +198,7 @@ public class TravelService {
     @Transactional
     public String likeTravel(Long travelId, User user) {
         Travel travel = travelRepository.findById(travelId).orElseThrow(
-                () -> new IllegalArgumentException(BOARD_DOES_NOT_EXIEST.getMessage())
+                () -> new CustomException(BOARD_NOT_FOUND)
         );
         if (travelLikeRepository.findByUserIdAndTravelId(user.getId(), travelId).isEmpty()) {
             travelLikeRepository.saveAndFlush(new TravelLike(travel, user));
@@ -235,7 +235,7 @@ public class TravelService {
                 amazonS3Client.putObject(new PutObjectRequest(bucketName, fileName, inputStream, objectMetadata)
                         .withCannedAcl(CannedAccessControlList.PublicRead));
             } catch (IOException e) {
-                throw new IOException(IMAGE_IS_INVALID.getMessage());
+                throw new CustomException(IMAGE_INVALID);
             }
         }
     }

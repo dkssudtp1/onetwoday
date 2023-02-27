@@ -1,10 +1,7 @@
 package com.sparta.onetwoday.service;
 
 
-import com.sparta.onetwoday.dto.CommentRequestDto;
-import com.sparta.onetwoday.dto.CommentResponseDto;
-import com.sparta.onetwoday.dto.TravelRequestDto;
-import com.sparta.onetwoday.dto.TravelResponseDto;
+import com.sparta.onetwoday.dto.*;
 import com.sparta.onetwoday.entity.Comment;
 import com.sparta.onetwoday.entity.Travel;
 import com.sparta.onetwoday.entity.User;
@@ -37,7 +34,7 @@ public class CommentService {
     public CommentResponseDto createComment(Long travelId, CommentRequestDto commentRequestDto, User user) {
 
             Travel travel = travelRepository.findById(travelId).orElseThrow(
-                    () -> new IllegalArgumentException(BOARD_DOES_NOT_EXIEST.getMessage())
+                    () -> new CustomException(BOARD_NOT_FOUND)
             );
 
             Comment comment = commentRepository.save(new Comment(commentRequestDto, travel, user));
@@ -48,12 +45,12 @@ public class CommentService {
     public List<CommentResponseDto> deleteComment(Long travelId, Long commentId, User user) {
 
         Comment comment = commentRepository.findById(commentId).orElseThrow(
-                () -> new IllegalArgumentException(COMMENT_DOES_NOT_EXIEST.getMessage())
+                () -> new CustomException(COMMENT_NOT_FOUND)
         );
         if (hasAuthority(user, comment)) {
             commentRepository.deleteById(commentId);
         } else {
-            throw new IllegalArgumentException(ILLEGAL_ACCESS_UPDATE_OR_DELETE.getMessage());
+            throw new CustomException(UNAUTHORIZED_UPDATE_OR_DELETE);
         }
 
         return getCommentList(travelId);
