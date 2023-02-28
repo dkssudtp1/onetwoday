@@ -20,4 +20,7 @@ public interface TravelRepository extends JpaRepository<Travel, Long> {
     Long countByIsDeleted(Boolean bool);
     @Query(value = "SELECT * FROM owntwoday.travel order by RAND() limit 8",nativeQuery = true)
     List<Travel> findAll();
+
+    @Query(value = "UPDATE owntwoday.travel SET is_deleted = :bool where travel_id = :travelId")
+    Travel updateBytravelId(Long travelId, Boolean bool);
 }

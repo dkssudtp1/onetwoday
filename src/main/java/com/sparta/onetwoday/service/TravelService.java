@@ -198,7 +198,8 @@ public class TravelService {
         Travel travel = travelRepository.findByIdAndIsDeleted(travelId, false);
         if (hasAuthority(user, travel)) {
 //            commentRepository.deleteByTravelId(travelId);
-            travel.setIsDeleted();
+//            travel.setIsDeleted();
+            travelRepository.updateBytravelId(travelId, true);
             return Message.toResponseEntity(BOARD_DELETE_SUCCESS);
 
         } else {

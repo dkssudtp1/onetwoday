@@ -49,7 +49,7 @@ public class Travel extends TimeStamped {
         this.budget = budget;
     }
 
-    public void setIsDeleted() {
-        this.isDeleted = true;
-    }
+//    public void setIsDeleted() {
+//        this.isDeleted = true;
+//    }
 }
