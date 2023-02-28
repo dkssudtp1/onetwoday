@@ -80,13 +80,16 @@ public class TravelService {
     @Transactional
     public ResponseEntity<Message> getMyList(User user) {
 
-        List<Travel> travels = travelRepository.findAllByUser(user);
+        List<Travel> travels = travelRepository.findAllByUserAndIsDeleted(user,false);
         List<TravelListResponseDto> travelListResponseDtos = new ArrayList<>();
-        for (Travel travel : travels) {
+        if(!travels.isEmpty()) {
+            for (Travel travel : travels) {
 //            List<CommentResponseDto> commentResponseDtos = new commentService.getCommentList(travel.getId())
-            Long likes = travelLikeRepository.countByTravelId(travel.getId());
-            travelListResponseDtos.add(new TravelListResponseDto(travel, likes));
+                Long likes = travelLikeRepository.countByTravelId(travel.getId());
+                travelListResponseDtos.add(new TravelListResponseDto(travel, likes));
+            }
         }
+
 
         return new Message().toResponseEntity(BOARD_MY_LIST_GET_SUCCESS, travelListResponseDtos);
 
@@ -113,9 +116,9 @@ public class TravelService {
 //
 //        return travelListResponse;
 
-        Long count = travelRepository.countBy();
+        Long count = travelRepository.countByIsDeleted(false);
         if (count < 8) {
-            List<Travel> travels = travelRepository.findAll();
+            List<Travel> travels = travelRepository.findAllByIsDeleted(false);
             List<TravelListResponseDto> responseDtos = new ArrayList<>();
             for (Travel travel : travels) {
                 //            List<CommentResponseDto> commentResponseDtos = new commentService.getCommentList(travel.getId())
@@ -128,7 +131,7 @@ public class TravelService {
         }
         List<TravelListResponseDto> response = new ArrayList<>();
 
-        List<Travel> travels = travelRepository.findAll();
+        List<Travel> travels = travelRepository.findAllByIsDeleted(false);
 
         for (Travel i : travels) {
             Long likes = travelLikeRepository.countByTravelId(i.getId());
@@ -144,9 +147,10 @@ public class TravelService {
     //상세 조회하기
     @Transactional(readOnly = true)
     public ResponseEntity<Message> getDetail(Long travelId) {
-        Travel travel = travelRepository.findById(travelId).orElseThrow(
-                () -> new CustomException(BOARD_NOT_FOUND)
-        );
+        if(travelRepository.findByIdAndIsDeleted(travelId, false) == null) {
+            throw new CustomException(BOARD_NOT_FOUND);
+        }
+        Travel travel = travelRepository.findByIdAndIsDeleted(travelId, false);
         List<CommentResponseDto> commentResponseDtos = commentService.getCommentList(travel.getId());
         Long likes = travelLikeRepository.countByTravelId(travel.getId());
 
@@ -158,9 +162,10 @@ public class TravelService {
     public ResponseEntity<Message> updateTravel(Long travelId, TravelRequestDto requestDto, User user) throws IOException {
         String fileName = requestDto.getImages().getOriginalFilename();
 
-        Travel travel = travelRepository.findById(travelId).orElseThrow(
-                () -> new CustomException(BOARD_NOT_FOUND)
-        );
+        if(travelRepository.findByIdAndIsDeleted(travelId, false) == null) {
+            throw new CustomException(BOARD_NOT_FOUND);
+        }
+        Travel travel = travelRepository.findByIdAndIsDeleted(travelId, false);
 
         Integer budget = budgetReturn(requestDto);
         if (budget == null) {
@@ -187,12 +192,13 @@ public class TravelService {
     //게시물 삭제하기
     @Transactional
     public ResponseEntity<Message> deleteTravel(Long travelId, User user) {
-        Travel travel = travelRepository.findById(travelId).orElseThrow(
-                () -> new CustomException(BOARD_NOT_FOUND)
-        );
+        if(travelRepository.findByIdAndIsDeleted(travelId, false) == null) {
+            throw new CustomException(BOARD_NOT_FOUND);
+        }
+        Travel travel = travelRepository.findByIdAndIsDeleted(travelId, false);
         if (hasAuthority(user, travel)) {
 //            commentRepository.deleteByTravelId(travelId);
-
+            travel.setIsDeleted();
             return Message.toResponseEntity(BOARD_DELETE_SUCCESS);
 
         } else {
@@ -203,9 +209,11 @@ public class TravelService {
     //게시물 좋아요
     @Transactional
     public ResponseEntity<Message> likeTravel(Long travelId, User user) {
-        Travel travel = travelRepository.findById(travelId).orElseThrow(
-                () -> new CustomException(BOARD_NOT_FOUND)
-        );
+        if(travelRepository.findByIdAndIsDeleted(travelId, false) == null) {
+            throw new CustomException(BOARD_NOT_FOUND);
+        }
+        Travel travel = travelRepository.findByIdAndIsDeleted(travelId, false);
+
         if (travelLikeRepository.findByUserIdAndTravelId(user.getId(), travelId).isEmpty()) {
             travelLikeRepository.saveAndFlush(new TravelLike(travel, user));
             return Message.toResponseEntity(LIKE_POST_SUCCESS);

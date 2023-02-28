@@ -25,13 +25,16 @@ public class Comment extends TimeStamped {
     @JoinColumn(name = "TRAVEL_ID", nullable = false)
     private Travel travel;
 
+    private Boolean isDeleted;
+
     public Comment(CommentRequestDto requestDto, Travel travel, User user) {
         this.user = user;
         this.travel = travel;
         this.comment = requestDto.getComment();
+        this.isDeleted = false;
     }
 
-    public void updateComment(CommentRequestDto commentRequestDto) {
-        this.comment = commentRequestDto.getComment();
+    public void setIsDeleted() {
+        this.isDeleted = true;
     }
 }

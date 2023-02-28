@@ -1,9 +1,6 @@
 package com.sparta.onetwoday.service;
 
-import com.sparta.onetwoday.dto.CustomException;
-import com.sparta.onetwoday.dto.LoginRequestDto;
-import com.sparta.onetwoday.dto.Message;
-import com.sparta.onetwoday.dto.SignupRequestDto;
+import com.sparta.onetwoday.dto.*;
 import com.sparta.onetwoday.entity.User;
 import com.sparta.onetwoday.entity.UserRoleEnum;
 import com.sparta.onetwoday.jwt.JwtUtil;
@@ -82,7 +79,9 @@ public class UserService {
 
         response.addHeader(JwtUtil.AUTHORIZATION_HEADER, jwtUtil.createToken(user.get().getUsername(), user.get().getRole()));
 
-        return new Message().toResponseEntity(LOGIN_SUCCESS, jwtUtil.createToken(user.get().getUsername(), user.get().getRole()));
+        String token = jwtUtil.createToken(user.get().getUsername(), user.get().getRole());
+        LoginResponseDto loginResponseDto = new LoginResponseDto(userRepository.findByNickname(user.get().getNickname()).get().getNickname(), token);
+        return new Message().toResponseEntity(LOGIN_SUCCESS, loginResponseDto);
     }
 
 }

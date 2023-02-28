@@ -24,6 +24,8 @@ public class Travel extends TimeStamped {
     @Column
     private String images;
 
+    private Boolean isDeleted;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "USERS_ID")
     private User user;
@@ -37,6 +39,7 @@ public class Travel extends TimeStamped {
         this.images = imgUrl;
         this.budget = budget;
         this.user = user;
+        this.isDeleted = false;
     }
 
     public void update(TravelRequestDto requestDto, Integer budget, String imgUrl) {
@@ -44,6 +47,9 @@ public class Travel extends TimeStamped {
         this.images = imgUrl;
         this.content = requestDto.getContent();
         this.budget = budget;
+    }
 
+    public void setIsDeleted() {
+        this.isDeleted = true;
     }
 }

@@ -17,7 +17,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static com.sparta.onetwoday.entity.ExceptionMessage.*;
-import static com.sparta.onetwoday.entity.SuccessMessage.COMMENT_POST_SUCCESS;
+import static com.sparta.onetwoday.entity.SuccessMessage.*;
 
 @Service
 @RequiredArgsConstructor
@@ -30,10 +30,10 @@ public class CommentService {
     @Transactional
     public ResponseEntity<Message> createComment(Long travelId, CommentRequestDto commentRequestDto, User user) {
 
-        Travel travel = travelRepository.findById(travelId).orElseThrow(
-                () -> new CustomException(BOARD_NOT_FOUND)
-        );
-
+        if (travelRepository.findByIdAndIsDeleted(travelId,false) == null) {
+            throw new CustomException(BOARD_NOT_FOUND);
+        }
+        Travel travel = travelRepository.findByIdAndIsDeleted(travelId, false);
         Comment comment = commentRepository.save(new Comment(commentRequestDto, travel, user));
 
         return new Message().toResponseEntity(COMMENT_POST_SUCCESS, new CommentResponseDto(comment));
@@ -41,23 +41,23 @@ public class CommentService {
 
     //댓글 삭제
     public ResponseEntity<Message> deleteComment(Long travelId, Long commentId, User user) {
-
-        Comment comment = commentRepository.findById(commentId).orElseThrow(
-                () -> new CustomException(COMMENT_NOT_FOUND)
-        );
+        Comment comment = commentRepository.findByIdAndIsDeleted(commentId, false);
+        if(comment == null) {
+            throw new CustomException(COMMENT_NOT_FOUND);
+        }
         if (hasAuthority(user, comment)) {
-            commentRepository.deleteById(commentId);
+            comment.setIsDeleted();
         } else {
             throw new CustomException(UNAUTHORIZED_UPDATE_OR_DELETE);
         }
 
-        return new Message().toResponseEntity(COMMENT_POST_SUCCESS, getCommentList(travelId));
+        return new Message().toResponseEntity(COMMENT_DELETE_SUCCESS, getCommentList(travelId));
     }
 
     //댓글 리스트
     @Transactional(readOnly = true)
     public List<CommentResponseDto> getCommentList(Long travelId) {
-        List<Comment> comments = commentRepository.findByTravelIdOrderByCreatedAtDesc(travelId);
+        List<Comment> comments = commentRepository.findByTravelIdAndIsDeletedOrderByCreatedAtDesc(travelId, false);
         List<CommentResponseDto> responseDtos = new ArrayList<>();
 
         if (!comments.isEmpty()) {
