@@ -5,6 +5,7 @@ import com.sparta.onetwoday.entity.User;
 import com.sparta.onetwoday.entity.UserRoleEnum;
 import com.sparta.onetwoday.jwt.JwtUtil;
 import com.sparta.onetwoday.repository.UserRepository;
+import com.sparta.onetwoday.security.UserDetailsImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -15,8 +16,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.util.Optional;
 
 import static com.sparta.onetwoday.entity.ExceptionMessage.*;
-import static com.sparta.onetwoday.entity.SuccessMessage.LOGIN_SUCCESS;
-import static com.sparta.onetwoday.entity.SuccessMessage.SIGN_UP_SUCCESS;
+import static com.sparta.onetwoday.entity.SuccessMessage.*;
 
 @Service
 @RequiredArgsConstructor
@@ -26,6 +26,7 @@ public class UserService {
     private final JwtUtil jwtUtil;
 
     private final PasswordEncoder passwordEncoder;
+
     private static final String ADMIN_TOKEN = "AAABnvxRVklrnYxKZ0aHgTBcXukeZygoC";
 
     @Transactional
@@ -84,4 +85,13 @@ public class UserService {
         return new Message().toResponseEntity(LOGIN_SUCCESS, loginResponseDto);
     }
 
+    public UserInfoResponseDto userInfo(UserDetailsImpl user) {
+
+        Long id = user.getUser().getId();
+        String nickname = user.getUser().getNickname();
+
+        UserInfoResponseDto userInfoResponseDto = new UserInfoResponseDto (id, nickname);
+//        return new Message().toResponseEntity(USER_INFO_SUCCESS, userInfoResponseDto);
+        return userInfoResponseDto;
+    }
 }

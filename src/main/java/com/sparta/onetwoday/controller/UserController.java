@@ -1,12 +1,11 @@
 package com.sparta.onetwoday.controller;
 
-import com.sparta.onetwoday.dto.CustomException;
-import com.sparta.onetwoday.dto.LoginRequestDto;
-import com.sparta.onetwoday.dto.SignupRequestDto;
-import com.sparta.onetwoday.dto.Message;
+import com.sparta.onetwoday.dto.*;
+import com.sparta.onetwoday.security.UserDetailsImpl;
 import com.sparta.onetwoday.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
@@ -37,5 +36,11 @@ public class UserController {
     @RequestMapping("/forbidden")
     public ResponseEntity<Message> getForbidden() {
         throw new CustomException(USER_FORBIDDEN);
+    }
+
+    @ResponseBody
+    @PostMapping
+    public UserInfoResponseDto userInfo(@AuthenticationPrincipal UserDetailsImpl userDetails) {
+        return userService.userInfo(userDetails);
     }
 }
