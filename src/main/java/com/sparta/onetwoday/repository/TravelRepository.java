@@ -16,6 +16,7 @@ public interface TravelRepository extends JpaRepository<Travel, Long> {
     List<Travel> findAllByUserAndIsDeleted(User user, Boolean bool);
 
 //    Long countBy();
+    @Query(value = "SELECT * FROM owntwoday.travel where is_deleted = :bool order by RAND() limit 8",nativeQuery = true)
     List<Travel> findAllByIsDeleted(Boolean bool);
 
     Travel findByIdAndIsDeleted(Long travelId, Boolean bool);
