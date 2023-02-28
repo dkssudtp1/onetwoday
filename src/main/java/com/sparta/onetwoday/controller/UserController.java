@@ -40,7 +40,7 @@ public class UserController {
 
     @ResponseBody
     @PostMapping
-    public UserInfoResponseDto userInfo(@AuthenticationPrincipal UserDetailsImpl userDetails) {
+    public ResponseEntity<Message> userInfo(@AuthenticationPrincipal UserDetailsImpl userDetails) {
         return userService.userInfo(userDetails);
     }
 }

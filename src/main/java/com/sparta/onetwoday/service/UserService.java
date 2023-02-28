@@ -85,13 +85,13 @@ public class UserService {
         return new Message().toResponseEntity(LOGIN_SUCCESS, loginResponseDto);
     }
 
-    public UserInfoResponseDto userInfo(UserDetailsImpl user) {
+    public ResponseEntity<Message> userInfo(UserDetailsImpl user) {
 
         Long id = user.getUser().getId();
         String nickname = user.getUser().getNickname();
 
         UserInfoResponseDto userInfoResponseDto = new UserInfoResponseDto (id, nickname);
 //        return new Message().toResponseEntity(USER_INFO_SUCCESS, userInfoResponseDto);
-        return userInfoResponseDto;
+        return new Message().toResponseEntity(USER_INFO_SUCCESS, userInfoResponseDto);
     }
 }
