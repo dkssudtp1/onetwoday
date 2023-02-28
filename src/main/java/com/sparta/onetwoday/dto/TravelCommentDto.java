@@ -12,6 +12,7 @@ public class TravelCommentDto {
 //    private Long id;
     private String title;
     private String username;
+    private String nickname;
     private String images;
     private String content;
     private Integer budget;
@@ -25,6 +26,7 @@ public class TravelCommentDto {
 //        this.id = travel.getId();
         this.title = travel.getTitle();
         this.username = travel.getUser().getUsername();
+        this.nickname = travel.getUser().getNickname();
         this.images = travel.getImages();
         this.content = travel.getContent();
         this.budget = travel.getBudget();
