@@ -41,6 +41,6 @@ public class ExceptionController {
     // 500
     @ExceptionHandler({Exception.class})
     public ResponseEntity handleAll(final Exception ex) {
-        return new Message().toAllExceptionResponseEntity(HttpStatus.BAD_REQUEST, ex.getMessage(), ex);
+        return new Message().toAllExceptionResponseEntity(HttpStatus.BAD_REQUEST, ex.getMessage(), ex.toString());
     }
 }
