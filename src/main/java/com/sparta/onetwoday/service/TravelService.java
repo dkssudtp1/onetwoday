@@ -222,6 +222,7 @@ public class TravelService {
             case 1 -> 1;
             case 2 -> 2;
             case 3 -> 3;
+            case 4 -> 4;
             default -> null;
         };
 
