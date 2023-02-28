@@ -46,7 +46,8 @@ public class CommentService {
             throw new CustomException(COMMENT_NOT_FOUND);
         }
         if (hasAuthority(user, comment)) {
-            commentRepository.updateByCommentId(commentId, true);
+            comment.setIsDeleted();
+            commentRepository.saveAndFlush(comment);
         } else {
             throw new CustomException(UNAUTHORIZED_UPDATE_OR_DELETE);
         }

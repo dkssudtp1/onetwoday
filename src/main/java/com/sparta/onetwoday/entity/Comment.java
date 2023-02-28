@@ -34,7 +34,7 @@ public class Comment extends TimeStamped {
         this.isDeleted = false;
     }
 
-//    public void setIsDeleted() {
-//        this.isDeleted = true;
-//    }
+    public void setIsDeleted() {
+        this.isDeleted = true;
+    }
 }
