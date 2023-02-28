@@ -36,7 +36,7 @@ public class CommentService {
 
         Comment comment = commentRepository.save(new Comment(commentRequestDto, travel, user));
 
-        return Message.toResponseEntity(COMMENT_POST_SUCCESS, new CommentResponseDto(comment));
+        return new Message().toResponseEntity(COMMENT_POST_SUCCESS, new CommentResponseDto(comment));
     }
 
     //댓글 삭제
@@ -51,7 +51,7 @@ public class CommentService {
             throw new CustomException(UNAUTHORIZED_UPDATE_OR_DELETE);
         }
 
-        return Message.toResponseEntity(COMMENT_POST_SUCCESS, getCommentList(travelId));
+        return new Message().toResponseEntity(COMMENT_POST_SUCCESS, getCommentList(travelId));
     }
 
     //댓글 리스트

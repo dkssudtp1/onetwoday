@@ -73,7 +73,7 @@ public class TravelService {
 
         Travel travel = travelRepository.saveAndFlush(new Travel(requestDto, user, budget, amazonS3Client.getUrl(bucketName, fileName).toString()));
 
-        return Message.toResponseEntity(BOARD_POST_SUCCESS, new TravelResponseDto(travel));
+        return new Message().toResponseEntity(BOARD_POST_SUCCESS, new TravelResponseDto(travel));
     }
 
     //나의 게시물 리스트 조회하기
@@ -88,7 +88,7 @@ public class TravelService {
             travelListResponseDtos.add(new TravelListResponseDto(travel, likes));
         }
 
-        return Message.toResponseEntity(BOARD_MY_LIST_GET_SUCCESS, travelListResponseDtos);
+        return new Message().toResponseEntity(BOARD_MY_LIST_GET_SUCCESS, travelListResponseDtos);
 
 //        return travels.stream().map(travel -> new TravelListResponseDto((Travel) travels,likes)).collect(Collectors.toList());
 
@@ -124,7 +124,7 @@ public class TravelService {
 
             }
 
-            return Message.toResponseEntity(BOARD_GET_SUCCESS, responseDtos);
+            return new Message().toResponseEntity(BOARD_GET_SUCCESS, responseDtos);
         }
         List<TravelListResponseDto> response = new ArrayList<>();
 
@@ -137,7 +137,7 @@ public class TravelService {
         }
 
 
-        return Message.toResponseEntity(BOARD_GET_SUCCESS, response);
+        return new Message().toResponseEntity(BOARD_GET_SUCCESS, response);
 
     }
 
@@ -150,7 +150,7 @@ public class TravelService {
         List<CommentResponseDto> commentResponseDtos = commentService.getCommentList(travel.getId());
         Long likes = travelLikeRepository.countByTravelId(travel.getId());
 
-        return Message.toResponseEntity(BOARD_DETAIL_GET_SUCCESS, new TravelCommentDto(travel, likes, commentResponseDtos));
+        return new Message().toResponseEntity(BOARD_DETAIL_GET_SUCCESS, new TravelCommentDto(travel, likes, commentResponseDtos));
     }
 
     //게시물 수정하기
@@ -181,7 +181,7 @@ public class TravelService {
         List<CommentResponseDto> commentResponseDtos = commentService.getCommentList(travel.getId());
         Long likes = travelLikeRepository.countByTravelId(travel.getId());
 
-        return Message.toResponseEntity(BOARD_DETAIL_GET_SUCCESS, new TravelCommentDto(travel, likes, commentResponseDtos));
+        return new Message().toResponseEntity(BOARD_DETAIL_GET_SUCCESS, new TravelCommentDto(travel, likes, commentResponseDtos));
     }
 
     //게시물 삭제하기

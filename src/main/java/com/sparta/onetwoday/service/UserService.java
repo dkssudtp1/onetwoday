@@ -76,13 +76,13 @@ public class UserService {
 
         // 사용자 확인
         Optional<User> user = userRepository.findByUsername(username);
-        if (!user.isPresent() && !passwordEncoder.matches(password, user.get().getPassword())) {
+        if (!(user.isPresent() && passwordEncoder.matches(password, user.get().getPassword()))) {
             throw new CustomException(MEMBER_NOT_FOUND);
         }
 
         response.addHeader(JwtUtil.AUTHORIZATION_HEADER, jwtUtil.createToken(user.get().getUsername(), user.get().getRole()));
 
-        return Message.toResponseEntity(LOGIN_SUCCESS, jwtUtil.createToken(user.get().getUsername(), user.get().getRole()));
+        return new Message().toResponseEntity(LOGIN_SUCCESS, jwtUtil.createToken(user.get().getUsername(), user.get().getRole()));
     }
 
 }
