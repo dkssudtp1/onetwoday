@@ -13,6 +13,7 @@ import com.sparta.onetwoday.repository.TravelLikeRepository;
 import com.sparta.onetwoday.repository.TravelRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.relational.core.sql.In;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -48,7 +49,6 @@ public class TravelService {
     public ResponseEntity<Message> createTravel(@RequestBody TravelRequestDto requestDto, User user) throws IOException {
         Integer budget = budgetReturn(requestDto);
         String fileName = "";
-        System.out.println("images : "+requestDto.getImages().getOriginalFilename());
         if(!(requestDto.getImages().getOriginalFilename().equals("") || requestDto.getImages().getOriginalFilename() == null)) {
             fileName = UUID.randomUUID() + "_" + requestDto.getImages().getOriginalFilename();
             s3ImageUpload(requestDto.getImages(), fileName);
@@ -135,6 +135,36 @@ public class TravelService {
         List<TravelListResponseDto> response = new ArrayList<>();
 
         List<Travel> travels = travelRepository.findAllByIsDeleted(false);
+
+        for (Travel i : travels) {
+            Long likes = travelLikeRepository.countByTravelId(i.getId());
+            TravelListResponseDto travelListResponse = new TravelListResponseDto(i.getId(), i.getTitle(), i.getImages(), likes);
+            response.add(travelListResponse);
+        }
+
+
+        return new Message().toResponseEntity(BOARD_GET_SUCCESS, response);
+
+    }
+
+    @Transactional(readOnly = true)
+    public ResponseEntity<Message> getbudgetFilterRandomList(TravelListRequestDto travelListRequestDto) {
+        Long count = travelRepository.countByIsDeletedAndBudget(false, travelListRequestDto.getBudgetFilter());
+        if (count < 8) {
+            List<Travel> travels = travelRepository.findAllByIsDeletedAndBudget(false, travelListRequestDto.getBudgetFilter());
+            List<TravelListResponseDto> responseDtos = new ArrayList<>();
+            for (Travel travel : travels) {
+                //            List<CommentResponseDto> commentResponseDtos = new commentService.getCommentList(travel.getId())
+                Long likes = travelLikeRepository.countByTravelId(travel.getId());
+                responseDtos.add(new TravelListResponseDto(travel, likes));
+
+            }
+
+            return new Message().toResponseEntity(BOARD_GET_SUCCESS, responseDtos);
+        }
+        List<TravelListResponseDto> response = new ArrayList<>();
+
+        List<Travel> travels = travelRepository.findAllByIsDeletedAndBudget(false, travelListRequestDto.getBudgetFilter());
 
         for (Travel i : travels) {
             Long likes = travelLikeRepository.countByTravelId(i.getId());

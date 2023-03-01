@@ -1,10 +1,12 @@
 package com.sparta.onetwoday.controller;
 
+import com.sparta.onetwoday.dto.TravelListRequestDto;
 import com.sparta.onetwoday.dto.TravelRequestDto;
 import com.sparta.onetwoday.dto.Message;
 import com.sparta.onetwoday.security.UserDetailsImpl;
 import com.sparta.onetwoday.service.TravelService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.relational.core.sql.In;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -34,6 +36,12 @@ public class TravelController {
     @GetMapping("/api/travel")
     public ResponseEntity<Message> getRandomList() {
         return travelService.getRandomList();
+    }
+
+    //무작위(랜덤) 리스트 8개만 보여주기
+    @PostMapping ("/api/travel")
+    public ResponseEntity<Message> getbudgetFilterRandomList(@RequestBody TravelListRequestDto travelListRequestDto) {
+        return travelService.getbudgetFilterRandomList(travelListRequestDto);
     }
 
     //상세페이지 조회하기

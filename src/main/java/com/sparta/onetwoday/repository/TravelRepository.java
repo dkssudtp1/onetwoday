@@ -5,6 +5,7 @@ import com.sparta.onetwoday.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.relational.core.sql.In;
 import org.springframework.stereotype.Repository;
 
 import javax.transaction.Transactional;
@@ -24,4 +25,6 @@ public interface TravelRepository extends JpaRepository<Travel, Long> {
     @Query(value = "SELECT * FROM owntwoday.travel order by RAND() limit 8",nativeQuery = true)
     List<Travel> findAll();
 
+    List<Travel> findAllByIsDeletedAndBudget(Boolean bool, int budget);
+    Long countByIsDeletedAndBudget(Boolean bool, int budget);
 }
