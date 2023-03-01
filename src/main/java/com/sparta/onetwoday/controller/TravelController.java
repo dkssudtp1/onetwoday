@@ -44,7 +44,7 @@ public class TravelController {
 
     @PostMapping ("/api/travel")
     public ResponseEntity<Message> getbudgetFilterRandomList(@RequestBody TravelListRequestDto travelListRequestDto) {
-        if(travelListRequestDto.getBudgetFilter() == 0)
+        if(travelListRequestDto.getBudgetFilter().equals("0"))
             return travelService.getRandomList();
         else
             return travelService.getbudgetFilterRandomList(travelListRequestDto);

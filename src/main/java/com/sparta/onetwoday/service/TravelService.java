@@ -161,9 +161,10 @@ public class TravelService {
 
     @Transactional(readOnly = true)
     public ResponseEntity<Message> getbudgetFilterRandomList(TravelListRequestDto travelListRequestDto) {
-        Long count = travelRepository.countByIsDeletedAndBudget(false, travelListRequestDto.getBudgetFilter());
+        int budgetFilterNum = Integer.parseInt(travelListRequestDto.getBudgetFilter());
+        Long count = travelRepository.countByIsDeletedAndBudget(false, budgetFilterNum);
         if (count < 8) {
-            List<Travel> travels = travelRepository.findAllByIsDeletedAndBudget(false, travelListRequestDto.getBudgetFilter());
+            List<Travel> travels = travelRepository.findAllByIsDeletedAndBudget(false, budgetFilterNum);
             List<TravelListResponseDto> responseDtos = new ArrayList<>();
             for (Travel travel : travels) {
                 //            List<CommentResponseDto> commentResponseDtos = new commentService.getCommentList(travel.getId())
@@ -176,7 +177,7 @@ public class TravelService {
         }
         List<TravelListResponseDto> response = new ArrayList<>();
 
-        List<Travel> travels = travelRepository.findAllByIsDeletedAndBudget(false, travelListRequestDto.getBudgetFilter());
+        List<Travel> travels = travelRepository.findAllByIsDeletedAndBudget(false, budgetFilterNum);
 
         for (Travel i : travels) {
             Long likes = travelLikeRepository.countByTravelId(i.getId());
