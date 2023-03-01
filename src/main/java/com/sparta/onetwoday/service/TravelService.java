@@ -51,6 +51,8 @@ public class TravelService {
     @Value("${cloud.aws.s3.bucket}")
     private String bucketName;
 
+    private final String bucketUrl = "https://onetwoday.s3.ap-northeast-2.amazonaws.com/";
+
 
     //게시물 작성하기
     @Transactional
@@ -82,7 +84,7 @@ public class TravelService {
             throw new CustomException(BUDGET_INVALID_RANGE);
         }
 
-        Travel travel = travelRepository.saveAndFlush(new Travel(requestDto, user, budget, amazonS3Client.getUrl(bucketName, fileName).toString()));
+        Travel travel = travelRepository.saveAndFlush(new Travel(requestDto, user, budget, bucketUrl + fileName));
 
         return new Message().toResponseEntity(BOARD_POST_SUCCESS, new TravelResponseDto(travel));
     }
@@ -217,13 +219,17 @@ public class TravelService {
         }
         
         //요청받은거랑 db 이미지명이 같을경우
-        if(!fileName.equals(travel.getImages())){
+        if(!fileName.equals("")){
             fileName = UUID.randomUUID() + "_" + requestDto.getImages().getOriginalFilename();
             s3ImageUpload(requestDto.getImages(), fileName);
+        }else {
+            System.out.println(fileName);
+            fileName = travel.getImages().replace("https://onetwoday.s3.ap-northeast-2.amazonaws.com/", "");
+            System.out.println(fileName);
         }
 
         if (hasAuthority(user, travel)) {
-            travel.update(requestDto, budget, amazonS3Client.getUrl(bucketName, fileName).toString());
+            travel.update(requestDto, budget, bucketUrl + fileName);
         } else {
             throw new CustomException(UNAUTHORIZED_UPDATE_OR_DELETE);
         }
