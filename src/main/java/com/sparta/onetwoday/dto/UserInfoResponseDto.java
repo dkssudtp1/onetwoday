@@ -7,10 +7,12 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class UserInfoResponseDto {
     private Long id;
+    private String username;
     private String nickname;
 
-    public UserInfoResponseDto(Long id, String nickname) {
-        this. id = id;
+    public UserInfoResponseDto(Long id, String username, String nickname) {
+        this.id = id;
+        this.username = username;
         this.nickname = nickname;
     }
 }

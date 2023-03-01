@@ -25,7 +25,7 @@ public class TravelController {
     }
 
     //내가 쓴 글만 리스트로 조회하기
-    @PostMapping("/api/travel/mylist")
+    @GetMapping("/api/travel/mylist")
     public ResponseEntity<Message> getMyList(@AuthenticationPrincipal UserDetailsImpl userDetails) {
         return travelService.getMyList(userDetails.getUser());
     }
