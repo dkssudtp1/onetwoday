@@ -9,8 +9,11 @@ import com.sparta.onetwoday.entity.Travel;
 import com.sparta.onetwoday.entity.TravelLike;
 import com.sparta.onetwoday.entity.User;
 import com.sparta.onetwoday.entity.UserRoleEnum;
+import com.sparta.onetwoday.jwt.JwtUtil;
 import com.sparta.onetwoday.repository.TravelLikeRepository;
 import com.sparta.onetwoday.repository.TravelRepository;
+import com.sparta.onetwoday.repository.UserRepository;
+import io.jsonwebtoken.Claims;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.relational.core.sql.In;
@@ -24,6 +27,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 import static com.sparta.onetwoday.entity.ExceptionMessage.*;
@@ -35,10 +39,14 @@ import static com.sparta.onetwoday.entity.SuccessMessage.*;
 public class TravelService {
     private final TravelRepository travelRepository;
     private final TravelLikeRepository travelLikeRepository;
+    private final UserRepository userRepository;
 
     private final CommentService commentService;
 
     private final AmazonS3Client amazonS3Client;
+
+
+    private final JwtUtil jwtUtil;
 
     @Value("${cloud.aws.s3.bucket}")
     private String bucketName;
@@ -81,9 +89,12 @@ public class TravelService {
 
     //나의 게시물 리스트 조회하기
     @Transactional
-    public ResponseEntity<Message> getMyList(User user) {
+    public ResponseEntity<Message> getMyList(String jwt) {
+        Claims claims = jwtUtil.getUserInfoFromToken(jwt.substring(7));
+        String username = claims.getSubject();
 
-        List<Travel> travels = travelRepository.findAllByUserAndIsDeleted(user,false);
+        Optional<User> user =  userRepository.findByUsername(username);
+        List<Travel> travels = travelRepository.findAllByUserAndIsDeleted(user.get(),false);
         List<TravelListResponseDto> travelListResponseDtos = new ArrayList<>();
         if(!travels.isEmpty()) {
             for (Travel travel : travels) {

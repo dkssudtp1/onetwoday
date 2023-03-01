@@ -9,6 +9,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindException;
+import org.springframework.web.bind.MissingRequestHeaderException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
@@ -37,6 +38,12 @@ public class ExceptionController {
     @ExceptionHandler({BindException.class})
     public ResponseEntity bindException(BindException ex) {
         return new Message().toAllExceptionResponseEntity(HttpStatus.BAD_REQUEST, ex.getFieldError().getDefaultMessage(), ex.getBindingResult().getTarget());
+    }
+
+    //마이리스트 토큰 없을시
+    @ExceptionHandler({MissingRequestHeaderException.class})
+    public ResponseEntity missingRequestHeaderException(MissingRequestHeaderException ex) {
+        return new Message().toAllExceptionResponseEntity(HttpStatus.BAD_REQUEST, "로그인이 되어있지 않습니다.", null);
     }
     // 500
     @ExceptionHandler({Exception.class})

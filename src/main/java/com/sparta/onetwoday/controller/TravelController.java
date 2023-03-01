@@ -3,8 +3,11 @@ package com.sparta.onetwoday.controller;
 import com.sparta.onetwoday.dto.TravelListRequestDto;
 import com.sparta.onetwoday.dto.TravelRequestDto;
 import com.sparta.onetwoday.dto.Message;
+import com.sparta.onetwoday.entity.User;
+import com.sparta.onetwoday.jwt.JwtUtil;
 import com.sparta.onetwoday.security.UserDetailsImpl;
 import com.sparta.onetwoday.service.TravelService;
+import io.jsonwebtoken.Claims;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.relational.core.sql.In;
 import org.springframework.http.ResponseEntity;
@@ -28,8 +31,8 @@ public class TravelController {
 
     //내가 쓴 글만 리스트로 조회하기
     @GetMapping("/api/travel/mylist")
-    public ResponseEntity<Message> getMyList(@AuthenticationPrincipal UserDetailsImpl userDetails) {
-        return travelService.getMyList(userDetails.getUser());
+    public ResponseEntity<Message> getMyList(@RequestHeader(value="Authorization") String jwt) {
+        return travelService.getMyList(jwt);
     }
 
     //무작위(랜덤) 리스트 8개만 보여주기
