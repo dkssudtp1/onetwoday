@@ -48,7 +48,8 @@ public class TravelService {
     public ResponseEntity<Message> createTravel(@RequestBody TravelRequestDto requestDto, User user) throws IOException {
         Integer budget = budgetReturn(requestDto);
         String fileName = "";
-        if(!(requestDto.getImages().equals("") && requestDto.getImages() == null)) {
+        System.out.println("images : "+requestDto.getImages().getOriginalFilename());
+        if(!(requestDto.getImages().getOriginalFilename().equals("") || requestDto.getImages().getOriginalFilename() == null)) {
             fileName = UUID.randomUUID() + "_" + requestDto.getImages().getOriginalFilename();
             s3ImageUpload(requestDto.getImages(), fileName);
         }
