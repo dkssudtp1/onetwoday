@@ -237,7 +237,7 @@ public class TravelService {
         List<CommentResponseDto> commentResponseDtos = commentService.getCommentList(travel.getId());
         Long likes = travelLikeRepository.countByTravelId(travel.getId());
 
-        return new Message().toResponseEntity(BOARD_DETAIL_GET_SUCCESS, new TravelCommentDto(travel, likes, commentResponseDtos));
+        return new Message().toResponseEntity(BOARD_PUT_SUCCESS, new TravelCommentDto(travel, likes, commentResponseDtos));
     }
 
     //게시물 삭제하기
