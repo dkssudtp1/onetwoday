@@ -90,9 +90,9 @@ public class TravelService {
     //나의 게시물 리스트 조회하기
     @Transactional
     public ResponseEntity<Message> getMyList(String jwt) {
-        Claims claims = jwtUtil.getUserInfoFromToken(jwt.substring(7));
+        jwtUtil.validateToken(jwt);
+        Claims claims = jwtUtil.getUserInfoFromToken(jwt);
         String username = claims.getSubject();
-
         Optional<User> user =  userRepository.findByUsername(username);
         List<Travel> travels = travelRepository.findAllByUserAndIsDeleted(user.get(),false);
         List<TravelListResponseDto> travelListResponseDtos = new ArrayList<>();

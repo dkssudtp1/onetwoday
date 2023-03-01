@@ -32,7 +32,7 @@ public class TravelController {
     //내가 쓴 글만 리스트로 조회하기
     @GetMapping("/api/travel/mylist")
     public ResponseEntity<Message> getMyList(@RequestHeader(value="Authorization") String jwt) {
-        return travelService.getMyList(jwt);
+        return travelService.getMyList(jwt.substring(7));
     }
 
     //무작위(랜덤) 리스트 8개만 보여주기
