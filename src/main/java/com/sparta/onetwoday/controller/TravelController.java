@@ -62,23 +62,6 @@ public class TravelController {
     public ResponseEntity<Message> updateTravel(@PathVariable Long travelId, @ModelAttribute TravelRequestDto requestDto, @AuthenticationPrincipal UserDetailsImpl userDetails) throws IOException {
         return travelService.updateTravel(travelId, requestDto, userDetails.getUser());
     }
-//    @PutMapping(consumes = {"multipart/form-data"},
-//            value = "/api/travel/{travelId}")
-//    public ResponseEntity<Message> updateTravel(@PathVariable Long travelId,
-//                                                @RequestPart("title") String title,
-//                                                @RequestPart("content") String content,
-//                                                @RequestPart(value = "images", required = false) MultipartFile images,
-//                                                @RequestPart("budget") Integer budget,
-//                                                @AuthenticationPrincipal UserDetailsImpl userDetails) throws IOException {
-//
-//        TravelRequestDto travelRequestDto = new TravelRequestDto();
-//        travelRequestDto.setTitle(title);
-//        travelRequestDto.setContent(content);
-//        if(!(images == null))
-//            travelRequestDto.setImages(images);
-//        travelRequestDto.setBudget(budget);
-//        return travelService.updateTravel(travelId, travelRequestDto, userDetails.getUser());
-//    }
 
     //여행정보 삭제하기
     @DeleteMapping("/api/travel/{travelId}")
