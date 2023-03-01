@@ -13,6 +13,7 @@ import org.springframework.data.relational.core.sql.In;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 
@@ -56,9 +57,14 @@ public class TravelController {
     }
 
     //여행정보 수정하기
+//    @PutMapping(consumes = {"multipart/form-data"},
+//            value = "/api/travel/{travelId}")
+//    public ResponseEntity<Message> updateTravel(@PathVariable Long travelId, @ModelAttribute TravelRequestDto requestDto, @AuthenticationPrincipal UserDetailsImpl userDetails) throws IOException {
+//        return travelService.updateTravel(travelId, requestDto, userDetails.getUser());
+//    }
     @PutMapping(consumes = {"multipart/form-data"},
             value = "/api/travel/{travelId}")
-    public ResponseEntity<Message> updateTravel(@PathVariable Long travelId, @ModelAttribute TravelRequestDto requestDto, @AuthenticationPrincipal UserDetailsImpl userDetails) throws IOException {
+    public ResponseEntity<Message> updateTravel(@PathVariable Long travelId, @RequestPart TravelRequestDto requestDto, @RequestPart(required = false) MultipartFile images, @AuthenticationPrincipal UserDetailsImpl userDetails) throws IOException {
         return travelService.updateTravel(travelId, requestDto, userDetails.getUser());
     }
 
