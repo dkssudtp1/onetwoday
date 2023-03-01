@@ -38,10 +38,12 @@ public class TravelController {
         return travelService.getRandomList();
     }
 
-    //무작위(랜덤) 리스트 8개만 보여주기
     @PostMapping ("/api/travel")
     public ResponseEntity<Message> getbudgetFilterRandomList(@RequestBody TravelListRequestDto travelListRequestDto) {
-        return travelService.getbudgetFilterRandomList(travelListRequestDto);
+        if(travelListRequestDto.getBudgetFilter() == 0)
+            return travelService.getRandomList();
+        else
+            return travelService.getbudgetFilterRandomList(travelListRequestDto);
     }
 
     //상세페이지 조회하기
