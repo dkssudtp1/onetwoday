@@ -59,11 +59,10 @@ public class TravelService {
     public ResponseEntity<Message> createTravel(@RequestBody TravelRequestDto requestDto, User user) throws IOException {
         Integer budget = budgetReturn(requestDto);
         String fileName = "";
-        if(!(requestDto.getImages().getOriginalFilename().equals("") || requestDto.getImages().getOriginalFilename() == null)) {
+        if (!(requestDto.getImages().getOriginalFilename().equals("") || requestDto.getImages().getOriginalFilename() == null)) {
             fileName = UUID.randomUUID() + "_" + requestDto.getImages().getOriginalFilename();
             s3ImageUpload(requestDto.getImages(), fileName);
-        }
-        else
+        } else
             throw new CustomException(IMAGE_INVALID);
 //        switch (requestDto.getBudget()) {
 //            case 0:
@@ -95,10 +94,10 @@ public class TravelService {
         jwtUtil.validateToken(jwt);
         Claims claims = jwtUtil.getUserInfoFromToken(jwt);
         String username = claims.getSubject();
-        Optional<User> user =  userRepository.findByUsername(username);
-        List<Travel> travels = travelRepository.findAllByUserAndIsDeleted(user.get(),false);
+        Optional<User> user = userRepository.findByUsername(username);
+        List<Travel> travels = travelRepository.findAllByUserAndIsDeleted(user.get(), false);
         List<TravelListResponseDto> travelListResponseDtos = new ArrayList<>();
-        if(!travels.isEmpty()) {
+        if (!travels.isEmpty()) {
             for (Travel travel : travels) {
 //            List<CommentResponseDto> commentResponseDtos = new commentService.getCommentList(travel.getId())
                 Long likes = travelLikeRepository.countByTravelId(travel.getId());
@@ -193,7 +192,7 @@ public class TravelService {
     //상세 조회하기
     @Transactional(readOnly = true)
     public ResponseEntity<Message> getDetail(Long travelId) {
-        if(travelRepository.findByIdAndIsDeleted(travelId, false) == null) {
+        if (travelRepository.findByIdAndIsDeleted(travelId, false) == null) {
             throw new CustomException(BOARD_NOT_FOUND);
         }
         Travel travel = travelRepository.findByIdAndIsDeleted(travelId, false);
@@ -206,9 +205,11 @@ public class TravelService {
     //게시물 수정하기
     @Transactional
     public ResponseEntity<Message> updateTravel(Long travelId, TravelRequestDto requestDto, User user) throws IOException {
-        String fileName = requestDto.getImages().getOriginalFilename();
+        String fileName = "";
+        if (!(requestDto.getImages() == null))
+            fileName = requestDto.getImages().getOriginalFilename();
 
-        if(travelRepository.findByIdAndIsDeleted(travelId, false) == null) {
+        if (travelRepository.findByIdAndIsDeleted(travelId, false) == null) {
             throw new CustomException(BOARD_NOT_FOUND);
         }
         Travel travel = travelRepository.findByIdAndIsDeleted(travelId, false);
@@ -217,12 +218,12 @@ public class TravelService {
         if (budget == null) {
             throw new CustomException(BUDGET_INVALID_RANGE);
         }
-        
+
         //요청받은거랑 db 이미지명이 같을경우
-        if(!fileName.equals("")){
+        if (!fileName.equals("")) {
             fileName = UUID.randomUUID() + "_" + requestDto.getImages().getOriginalFilename();
             s3ImageUpload(requestDto.getImages(), fileName);
-        }else {
+        } else {
             System.out.println(fileName);
             fileName = travel.getImages().replace("https://onetwoday.s3.ap-northeast-2.amazonaws.com/", "");
             System.out.println(fileName);
@@ -242,7 +243,7 @@ public class TravelService {
     //게시물 삭제하기
     @Transactional
     public ResponseEntity<Message> deleteTravel(Long travelId, User user) {
-        if(travelRepository.findByIdAndIsDeleted(travelId, false) == null) {
+        if (travelRepository.findByIdAndIsDeleted(travelId, false) == null) {
             throw new CustomException(BOARD_NOT_FOUND);
         }
         Travel travel = travelRepository.findByIdAndIsDeleted(travelId, false);
@@ -260,7 +261,7 @@ public class TravelService {
     //게시물 좋아요
     @Transactional
     public ResponseEntity<Message> likeTravel(Long travelId, User user) {
-        if(travelRepository.findByIdAndIsDeleted(travelId, false) == null) {
+        if (travelRepository.findByIdAndIsDeleted(travelId, false) == null) {
             throw new CustomException(BOARD_NOT_FOUND);
         }
         Travel travel = travelRepository.findByIdAndIsDeleted(travelId, false);
@@ -293,7 +294,7 @@ public class TravelService {
     }
 
     public void s3ImageUpload(MultipartFile images, String fileName) throws IOException {
-        if(!fileName.equals("")) {
+        if (!fileName.equals("")) {
             ObjectMetadata objectMetadata = new ObjectMetadata();
             objectMetadata.setContentType(images.getContentType());
 

@@ -9,7 +9,7 @@ import org.springframework.web.multipart.MultipartFile;
 @Setter
 public class TravelRequestDto {
     private String title;
-    private MultipartFile images;
+    private MultipartFile images = null;
     private String content;
     private Integer budget;
 
