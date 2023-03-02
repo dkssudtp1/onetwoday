@@ -44,6 +44,7 @@ public class TravelController {
 
     @PostMapping ("/api/travel")
     public ResponseEntity<Message> getbudgetFilterRandomList(@RequestBody TravelListRequestDto travelListRequestDto) {
+        System.out.println("budgetFilter : " + travelListRequestDto.getBudgetFilter());
         if(travelListRequestDto.getBudgetFilter().equals("0"))
             return travelService.getRandomList();
         else
