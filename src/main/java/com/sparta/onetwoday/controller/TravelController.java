@@ -27,6 +27,8 @@ public class TravelController {
     @PostMapping(consumes = {"multipart/form-data"},
             value = "/api/travel")
     public ResponseEntity<Message> createTravel(@ModelAttribute TravelRequestDto requestDto, @AuthenticationPrincipal UserDetailsImpl userDetails) throws IOException {
+
+        System.out.println("imagesCreate : " + requestDto.getImages());
         return travelService.createTravel(requestDto, userDetails.getUser());
     }
 
@@ -44,7 +46,7 @@ public class TravelController {
 
     @PostMapping ("/api/travel")
     public ResponseEntity<Message> getbudgetFilterRandomList(@RequestBody TravelListRequestDto travelListRequestDto) {
-        if(travelListRequestDto.getBudgetFilter() == 0)
+        if(travelListRequestDto.getBudgetFilter().equals("0"))
             return travelService.getRandomList();
         else
             return travelService.getbudgetFilterRandomList(travelListRequestDto);
@@ -57,14 +59,10 @@ public class TravelController {
     }
 
     //여행정보 수정하기
-//    @PutMapping(consumes = {"multipart/form-data"},
-//            value = "/api/travel/{travelId}")
-//    public ResponseEntity<Message> updateTravel(@PathVariable Long travelId, @ModelAttribute TravelRequestDto requestDto, @AuthenticationPrincipal UserDetailsImpl userDetails) throws IOException {
-//        return travelService.updateTravel(travelId, requestDto, userDetails.getUser());
-//    }
     @PutMapping(consumes = {"multipart/form-data"},
             value = "/api/travel/{travelId}")
-    public ResponseEntity<Message> updateTravel(@PathVariable Long travelId, @RequestPart TravelRequestDto requestDto, @RequestPart(required = false) MultipartFile images, @AuthenticationPrincipal UserDetailsImpl userDetails) throws IOException {
+    public ResponseEntity<Message> updateTravel(@PathVariable Long travelId, @ModelAttribute TravelRequestDto requestDto, @AuthenticationPrincipal UserDetailsImpl userDetails) throws IOException {
+        System.out.println("imagesUpdate : " + requestDto.getImages());
         return travelService.updateTravel(travelId, requestDto, userDetails.getUser());
     }
 

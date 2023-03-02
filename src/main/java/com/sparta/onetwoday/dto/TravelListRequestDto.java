@@ -6,5 +6,5 @@ import lombok.Setter;
 @Getter
 @Setter
 public class TravelListRequestDto {
-    int budgetFilter;
+    String budgetFilter;
 }
