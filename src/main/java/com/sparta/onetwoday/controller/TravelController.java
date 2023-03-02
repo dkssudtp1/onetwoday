@@ -27,6 +27,8 @@ public class TravelController {
     @PostMapping(consumes = {"multipart/form-data"},
             value = "/api/travel")
     public ResponseEntity<Message> createTravel(@ModelAttribute TravelRequestDto requestDto, @AuthenticationPrincipal UserDetailsImpl userDetails) throws IOException {
+
+        System.out.println("imagesCreate : " + requestDto.getImages());
         return travelService.createTravel(requestDto, userDetails.getUser());
     }
 
@@ -44,7 +46,6 @@ public class TravelController {
 
     @PostMapping ("/api/travel")
     public ResponseEntity<Message> getbudgetFilterRandomList(@RequestBody TravelListRequestDto travelListRequestDto) {
-        System.out.println("budgetFilterTest : " + travelListRequestDto.getBudgetFilter());
         if(travelListRequestDto.getBudgetFilter().equals("0"))
             return travelService.getRandomList();
         else
@@ -61,6 +62,7 @@ public class TravelController {
     @PutMapping(consumes = {"multipart/form-data"},
             value = "/api/travel/{travelId}")
     public ResponseEntity<Message> updateTravel(@PathVariable Long travelId, @ModelAttribute TravelRequestDto requestDto, @AuthenticationPrincipal UserDetailsImpl userDetails) throws IOException {
+        System.out.println("imagesUpdate : " + requestDto.getImages());
         return travelService.updateTravel(travelId, requestDto, userDetails.getUser());
     }
 
