@@ -41,13 +41,13 @@ jobs:
 
 
       ## create application.properties
-      - name: make application.properties
+      - name: make application-dev.properties
         run:
-          touch ./src/main/resources/application.properties
+          touch ./src/main/resources/application-dev.properties
         shell: bash
 
-      - name: deliver application.properties
-        run: echo "${{ secrets.PROPERTIES }}" > ./src/main/resources/application.properties
+      - name: deliver application-dev.properties
+        run: echo "${{ secrets.PROPERTIES }}" > ./src/main/resources/application-dev.properties
         shell: bash
 
 
